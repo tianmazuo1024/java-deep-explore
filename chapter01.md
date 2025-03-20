@@ -614,5 +614,6 @@ public class HostessJiruxue {
 4. 在Windows系统中，可以在命令行中运行“Resmon”命令查看各个CPU的并发和并行状况，而MacOS则可以通过活动监视器查看。如图1-49和图1-50所示。读者可以参照它们看看自己的计算机CPU的数量、并发和并行状况。
 
 ![图1-49 Windows上的CPU并行计算](chapter01/01-49.png)
+> 图1-49 Windows上的CPU并行计算
 
 ![图1-50 MacOS上的CPU并行计算](chapter01/01-50.png)
