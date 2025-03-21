@@ -453,3 +453,60 @@ t2 开始执行		t1 执行结束			t1 开始执行			t2 执行结束
 t1 执行结束		t2 开始执行			t1 执行结束			t1 开始执行
 t2 执行结束 		t2 执行结束			t2 执行结束			t1 执行结束
 ```
+
+从结果可以看出，Thread.yield()虽然口头上说“谦让”，但也只是“说说而已”。
+
+#### 3.2.3 休眠（sleep）与打断（interrupt）
+
+自JDK 1.5引入TimeUnit.[X].sleep()之后（[X]表示具体时间单位），Thread.sleep()就不再建议使用了。因为TimeUnit不但更加强大且更优雅。例如想休眠5天4小时3分2秒1毫秒，用Thread.sleep()该怎么办？——难办！但是用TimeUnit.[X].sleep()就很好解决。如下面的代码片段所示。
+
+```java
+TimeUnit.DAYS.sleep(5);
+TimeUnit.HOURS.sleep(4);
+TimeUnit.MINUTES.sleep(3);
+TimeUnit.SECONDS.sleep(2);
+TimeUnit.MILLISECONDS.sleep(1);
+```
+
+TimeUnit比Thread直观清晰得多。现在用interrupt()验证线程生命周期的状态转换。因为代码占用篇幅较多故作简略，完整代码在cn.javabook.chapter03.threadapi.SleepInterrupt。
+
+SleepInterrupt执行后，打印结果如下所示：
+
+```java
+Thread-0 - 0
+Thread-0 - 1
+Exception in thread "Thread-0" ...: sleep interrupted
+	...
+Caused by: java.lang.InterruptedException: sleep interrupted
+	at java.base/java.lang.Thread.sleep(Native Method)
+	... 1 more
+t1线程状态：TIMED_WAITING
+t1打断状态：false
+Exception in thread "Thread-1" ...: java.lang.InterruptedException
+	...
+Caused by: java.lang.InterruptedException
+	at java.base/java.lang.Object.wait(Native Method)
+	... 1 more
+t2线程状态：WAITING
+t2打断状态：false
+t3线程状态：RUNNABLE
+t3打断状态：true
+```
+
+可以清楚地看到t1、t2和t3的不同线程状态和打断状态。至于原因的分析，就留给读者吧。
+
+#### 3.2.4 常用方法的比较
+
+现在稍微总结一下前面已介绍过的Thread API，如表3-1所示。
+
+> 表3-1 常见Thread API的比较
+
+| 常见方法 | 作用 | 锁 | 方法类型 | 所属对象 |
+|:---:|:---:|:---:|:---:|:---:|
+| wait(int) | 等待指定时间或一直等待下去 | 立即释放 | 实例方法 | Object |
+| notify() | 随机唤醒某个线程 | 立即释放 | 不立即释放 | Object |
+| notifyAll() | 唤醒全部线程 | 立即释放 | 不立即释放 | Object |
+| join(int) | 强制某个线程插队执行 | 不释放锁 | 实例方法 | Thread |
+| yield() | 使当前线程让出CPU资源，但有可能会立即又抢回 | 不释放锁 | 静态方法 | Thread |
+| sleep(int) | 是某个线程休眠指定的时间 | 不释放锁 | 静态方法 | Thread TimeUnit |
+| interrupt() | 打断处于wait、sleep的线程或调用interrupt的线程 | 不立即释放 | 实例方法 | Thread |
