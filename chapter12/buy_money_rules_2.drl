@@ -1,0 +1,22 @@
+package buy_money_rules;
+
+import com.javabook.chapter12.entity.Coupon;
+
+rule "point"
+    when
+        $coupon : Coupon()
+    then
+        if ($coupon.getBuyMoney() <= 100) {
+            $coupon.setPoint(0);
+        }
+        if ($coupon.getBuyMoney() > 100 && $coupon.getBuyMoney() <= 500) {
+            $coupon.setPoint($coupon.getPoint() + 10);
+        }
+        if ($coupon.getBuyMoney() > 500 && $coupon.getBuyMoney() <= 1000) {
+            $coupon.setPoint($coupon.getPoint() + 50);
+        }
+        if ($coupon.getBuyMoney() > 1000) {
+            $coupon.setPoint($coupon.getPoint() + 100);
+        }
+        update($coupon);
+end

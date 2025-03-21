@@ -1,0 +1,11 @@
+version: '3.7'
+services:
+    web:
+        build:
+            context: ./web
+            dockerfile: Dockerfile
+        ports:
+            - '9090:9090'
+        container_name: javabook-server02
+        volumes:
+            - './jar:/home/work'

@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<changelog xmlns="http://www.omnigroup.com/namespace/OmniPlan/v2">
+  <version>2.1</version>
+  <task-change-set user="bear" date="2024-02-20T12:27:11.242Z" timestamp="2024-02-20T12:27:11.242Z">
+    <change idref="t1" from="t-1" from-position="0" resolved="yes">
+      <change idref="t1" attribute="title" type="string" to="Task 1"/>
+    </change>
+    <change idref="t5" to="t-1" to-position="0" resolved="yes">
+      <change idref="t5" attribute="effort" type="real" from="28800" to="7200"/>
+      <change idref="t5" attribute="internalAssignments" type="string" from="" to="1"/>
+      <change idref="t5" attribute="noEarlierThanConstraintDate" type="date" to="2024-02-19T21:00:00.000Z"/>
+      <change idref="t5" attribute="title" type="string" to="生鲜采买"/>
+    </change>
+    <change idref="t15" to="t-1" to-position="1" resolved="yes">
+      <change idref="t15" attribute="internalAssignments" type="string" from="" to="12"/>
+      <change idref="t15" attribute="title" type="string" to="后厨清洁"/>
+    </change>
+    <change idref="t13" to="t-1" to-position="2" resolved="yes">
+      <change idref="t13" attribute="internalAssignments" type="string" from="" to="7"/>
+      <change idref="t13" attribute="title" type="string" to="备料"/>
+    </change>
+    <change idref="t14" to="t-1" to-position="3" resolved="yes">
+      <change idref="t14" attribute="title" type="string" to="Task 1"/>
+    </change>
+  </task-change-set>
+  <task-change-set user="bear" date="2024-02-20T12:47:54.520Z" timestamp="2024-02-20T12:47:54.520Z">
+    <change idref="t13" attribute="isGroup" type="real" from="0" to="1" resolved="yes"/>
+    <change idref="t13" attribute="multiResourceWorkType" type="real" from="0" resolved="yes"/>
+    <change idref="t13" attribute="isSplittableTask" type="real" from="1" resolved="yes"/>
+    <change idref="t13" attribute="taskType" type="real" from="0" to="2" resolved="yes"/>
+    <change idref="t13" attribute="title" type="string" from="备料" to="餐前准备" resolved="yes"/>
+    <change idref="t13" attribute="resourceAssignmentType" type="real" from="0" resolved="yes"/>
+    <change idref="t13" attribute="staticCost" type="real" from="0" resolved="yes"/>
+    <change idref="t13" attribute="effort" type="real" from="28800" resolved="yes"/>
+    <change idref="t13" attribute="isSplitChunk" type="real" from="0" resolved="yes"/>
+    <change idref="t13" attribute="scheduleType" type="real" from="0" resolved="yes"/>
+    <change idref="t13" attribute="internalAssignments" type="string" from="7" resolved="yes"/>
+    <change idref="t13" attribute="noEarlierThanConstraintDate" type="date" to="2024-02-19T22:00:00.000Z" resolved="yes"/>
+    <change idref="t13" attribute="isSplitTask" type="real" from="0" resolved="yes"/>
+    <change idref="t13" attribute="internalEffortDone" type="real" from="0" resolved="yes"/>
+    <change idref="t16" to="t13" to-position="0" resolved="yes">
+      <change idref="t16" attribute="effort" type="real" from="28800" to="3600"/>
+      <change idref="t16" attribute="internalAssignments" type="string" from="" to="7"/>
+      <change idref="t16" attribute="title" type="string" to="辅料"/>
+    </change>
+    <change idref="t17" to="t13" to-position="1" resolved="yes">
+      <change idref="t17" attribute="effort" type="real" from="28800" to="3600"/>
+      <change idref="t17" attribute="internalAssignments" type="string" from="" to="11"/>
+      <change idref="t17" attribute="title" type="string" to="水台"/>
+    </change>
+    <change idref="t18" to="t13" to-position="2" resolved="yes">
+      <change idref="t18" attribute="effort" type="real" from="28800" to="3600"/>
+      <change idref="t18" attribute="internalAssignments" type="string" from="" to="13"/>
+      <change idref="t18" attribute="title" type="string" to="面点"/>
+    </change>
+    <change idref="t14" attribute="noEarlierThanConstraintDate" type="date" to="2024-02-19T23:00:00.000Z" resolved="yes"/>
+    <change idref="t15" attribute="isSplitTask" type="real" from="0" to="1" resolved="yes"/>
+    <change idref="t22" to="t15" to-position="0" resolved="yes">
+      <change idref="t22" attribute="effort" type="real" from="28800" to="3600"/>
+      <change idref="t22" attribute="internalAssignments" type="string" from="" to="12"/>
+      <change idref="t22" attribute="isSplitChunk" type="real" from="0" to="1"/>
+      <change idref="t22" attribute="noEarlierThanConstraintDate" type="date" to="2024-02-19T22:00:00.000Z"/>
+      <change idref="t22" attribute="title" type="string" to="后厨清洁 #1"/>
+    </change>
+    <change idref="t23" to="t15" to-position="1" resolved="yes">
+      <change idref="t23" attribute="effort" type="real" from="28800" to="25200"/>
+      <change idref="t23" attribute="internalAssignments" type="string" from="" to="12"/>
+      <change idref="t23" attribute="isSplitChunk" type="real" from="0" to="1"/>
+      <change idref="t23" attribute="noEarlierThanConstraintDate" type="date" to="2024-02-20T01:00:00.000Z"/>
+      <change idref="t23" attribute="title" type="string" to="后厨清洁 #2"/>
+    </change>
+  </task-change-set>
+  <task-change-set user="bear" date="2024-02-20T13:12:54.772Z" timestamp="2024-02-20T13:12:54.772Z">
+    <change idref="t27" to="t-1" to-position="3" resolved="yes">
+      <change idref="t27" attribute="effort" type="real" from="28800" to="1800"/>
+      <change idref="t27" attribute="internalAssignments" type="string" from="" to="9"/>
+      <change idref="t27" attribute="noEarlierThanConstraintDate" type="date" to="2024-02-19T22:30:00.000Z"/>
+      <change idref="t27" attribute="title" type="string" to="准备早餐"/>
+    </change>
+    <change idref="t29" to="t-1" to-position="4" resolved="yes">
+      <change idref="t29" attribute="internalAssignments" type="string" from="" to="4"/>
+      <change idref="t29" attribute="isSplitTask" type="real" from="0" to="1"/>
+      <change idref="t29" attribute="notesAllowingNil" type="textdata" to="e1xydGYxXGFuc2lcYW5zaWNwZzkzNlxjb2NvYXJ0ZjI3NTkKXGNvY29hdGV4dHNjYWxpbmcwXGNvY29hcGxhdGZvcm0we1xmb250dGJsXGYwXGZuaWxcZmNoYXJzZXQxMzQgUGluZ0ZhbmdTQy1SZWd1bGFyO30Ke1xjb2xvcnRibDtccmVkMjU1XGdyZWVuMjU1XGJsdWUyNTU7XHJlZDg1XGdyZWVuODVcYmx1ZTg1O30Ke1wqXGV4cGFuZGVkY29sb3J0Ymw7O1xjc2dyYXlcYzQwOTIyO30KXHBhcmRcdHg1NjBcdHgxMTIwXHR4MTY4MFx0eDIyNDBcdHgyODAwXHR4MzM2MFx0eDM5MjBcdHg0NDgwXHR4NTA0MFx0eDU2MDBcdHg2MTYwXHR4NjcyMFxwYXJkaXJuYXR1cmFsXHBhcnRpZ2h0ZW5mYWN0b3IwCgpcZjBcZnMyNCBcY2YyIFwnZDJcJ2JiXCdiM1wnZTVcJ2ExXCdhMlwnYjZcJ2ZlXCdjZlwnYjRcJ2ExXCdhMlwnYzhcJ2ZkXCdjN1wnZTV9"/>
+      <change idref="t29" attribute="title" type="string" to="餐具清洁"/>
+    </change>
+    <change idref="t24" to="t13" to-position="3" resolved="yes">
+      <change idref="t24" attribute="effort" type="real" from="28800" to="3600"/>
+      <change idref="t24" attribute="internalAssignments" type="string" from="" to="14"/>
+      <change idref="t24" attribute="title" type="string" to="熟食"/>
+    </change>
+    <change idref="t14" attribute="isGroup" type="real" from="0" to="1" resolved="yes"/>
+    <change idref="t14" attribute="multiResourceWorkType" type="real" from="0" resolved="yes"/>
+    <change idref="t14" attribute="isSplittableTask" type="real" from="1" resolved="yes"/>
+    <change idref="t14" attribute="taskType" type="real" from="0" to="2" resolved="yes"/>
+    <change idref="t14" attribute="title" type="string" from="Task 1" to="预制菜品" resolved="yes"/>
+    <change idref="t14" attribute="resourceAssignmentType" type="real" from="0" resolved="yes"/>
+    <change idref="t14" attribute="staticCost" type="real" from="0" resolved="yes"/>
+    <change idref="t14" attribute="effort" type="real" from="28800" resolved="yes"/>
+    <change idref="t14" attribute="isSplitChunk" type="real" from="0" resolved="yes"/>
+    <change idref="t14" attribute="scheduleType" type="real" from="0" resolved="yes"/>
+    <change idref="t14" attribute="internalAssignments" type="string" from="" resolved="yes"/>
+    <change idref="t14" attribute="isSplitTask" type="real" from="0" resolved="yes"/>
+    <change idref="t14" attribute="internalEffortDone" type="real" from="0" resolved="yes"/>
+    <change idref="t25" to="t14" to-position="0" resolved="yes">
+      <change idref="t25" attribute="effort" type="real" from="28800" to="14400"/>
+      <change idref="t25" attribute="internalAssignments" type="string" from="" to="9; 10"/>
+      <change idref="t25" attribute="title" type="string" to="预制菜"/>
+    </change>
+    <change idref="t26" to="t14" to-position="1" resolved="yes">
+      <change idref="t26" attribute="effort" type="real" from="28800" to="14400"/>
+      <change idref="t26" attribute="internalAssignments" type="string" from="" to="6"/>
+      <change idref="t26" attribute="title" type="string" to="煲汤"/>
+    </change>
+    <change idref="t30" to="t29" to-position="0" resolved="yes">
+      <change idref="t30" attribute="effort" type="real" from="28800" to="3600"/>
+      <change idref="t30" attribute="internalAssignments" type="string" from="" to="4"/>
+      <change idref="t30" attribute="isSplitChunk" type="real" from="0" to="1"/>
+      <change idref="t30" attribute="noEarlierThanConstraintDate" type="date" to="2024-02-19T23:00:00.000Z"/>
+      <change idref="t30" attribute="title" type="string" to="餐具清洁 #1"/>
+    </change>
+    <change idref="t31" to="t29" to-position="1" resolved="yes">
+      <change idref="t31" attribute="effort" type="real" from="28800" to="25200"/>
+      <change idref="t31" attribute="internalAssignments" type="string" from="" to="4"/>
+      <change idref="t31" attribute="isSplitChunk" type="real" from="0" to="1"/>
+      <change idref="t31" attribute="noEarlierThanConstraintDate" type="date" to="2024-02-20T01:00:00.000Z"/>
+      <change idref="t31" attribute="title" type="string" to="餐具清洁 #2"/>
+    </change>
+  </task-change-set>
+  <task-change-set user="bear" date="2024-02-20T13:14:06.218Z" timestamp="2024-02-20T13:14:06.218Z">
+    <change idref="t23" attribute="noEarlierThanConstraintDate" type="date" from="2024-02-20T01:00:00.000Z" to="2024-02-20T00:00:00.000Z" resolved="yes"/>
+  </task-change-set>
+  <task-change-set user="bear" date="2024-02-20T13:26:00.545Z" timestamp="2024-02-20T13:26:00.545Z">
+    <change idref="t32" to="t-1" to-position="6" resolved="yes">
+      <change idref="t32" attribute="isGroup" type="real" from="0" to="1"/>
+      <change idref="t32" attribute="noEarlierThanConstraintDate" type="date" to="2024-02-20T02:00:00.000Z"/>
+      <change idref="t32" attribute="taskType" type="real" from="0" to="2"/>
+      <change idref="t32" attribute="title" type="string" to="中餐前准备"/>
+    </change>
+    <change idref="t37" to="t-1" to-position="7" resolved="yes">
+      <change idref="t37" attribute="title" type="string" to="Task 1"/>
+    </change>
+    <change idref="t13" attribute="title" type="string" from="餐前准备" to="早餐前准备" resolved="yes"/>
+    <change idref="t15" attribute="effort" type="real" from="28800" to="18000" resolved="yes"/>
+    <change idref="t35" to="t15" to-position="2" resolved="yes">
+      <change idref="t35" attribute="effort" type="real" from="28800" to="10800"/>
+      <change idref="t35" attribute="internalAssignments" type="string" from="" to="12"/>
+      <change idref="t35" attribute="isSplitChunk" type="real" from="0" to="1"/>
+      <change idref="t35" attribute="noEarlierThanConstraintDate" type="date" to="2024-02-20T04:00:00.000Z"/>
+      <change idref="t35" attribute="title" type="string" to="后厨清洁 #3"/>
+    </change>
+    <change idref="t22" attribute="title" type="string" from="后厨清洁" to="后厨清洁 #1" resolved="yes"/>
+    <change idref="t22" attribute="isSplitChunk" type="real" from="0" to="1" resolved="yes"/>
+    <change idref="t22" attribute="internalAssignments" type="string" from="" to="12" resolved="yes"/>
+    <change idref="t23" attribute="title" type="string" from="后厨清洁" to="后厨清洁 #2" resolved="yes"/>
+    <change idref="t23" attribute="noLaterThanConstrainedTaskEnd" type="real" from="1" to="0" resolved="yes"/>
+    <change idref="t23" attribute="effort" type="real" from="25200" to="3600" resolved="yes"/>
+    <change idref="t23" attribute="isSplitChunk" type="real" from="0" to="1" resolved="yes"/>
+    <change idref="t23" attribute="noEarlierThanConstraintDate" type="date" from="2024-02-20T00:00:00.000Z" to="2024-02-20T01:00:00.000Z" resolved="yes"/>
+    <change idref="t23" attribute="internalAssignments" type="string" from="" to="12" resolved="yes"/>
+    <change idref="t26" attribute="effort" type="real" from="14400" to="10800" resolved="yes"/>
+    <change idref="t33" to="t29" to-position="2" resolved="yes">
+      <change idref="t33" attribute="effort" type="real" from="28800" to="19800"/>
+      <change idref="t33" attribute="internalAssignments" type="string" from="" to="4"/>
+      <change idref="t33" attribute="isSplitChunk" type="real" from="0" to="1"/>
+      <change idref="t33" attribute="noEarlierThanConstraintDate" type="date" to="2024-02-20T04:00:00.000Z"/>
+      <change idref="t33" attribute="title" type="string" to="餐具清洁 #3"/>
+    </change>
+    <change idref="t31" attribute="effort" type="real" from="25200" to="5400" resolved="yes"/>
+    <change idref="t34" to="t32" to-position="0" resolved="yes">
+      <change idref="t34" attribute="effort" type="real" from="28800" to="3600"/>
+      <change idref="t34" attribute="internalAssignments" type="string" from="" to="7"/>
+      <change idref="t34" attribute="title" type="string" to="辅料"/>
+    </change>
+    <change idref="t36" to="t32" to-position="1" resolved="yes">
+      <change idref="t36" attribute="effort" type="real" from="28800" to="3600"/>
+      <change idref="t36" attribute="internalAssignments" type="string" from="" to="11"/>
+      <change idref="t36" attribute="title" type="string" to="水台"/>
+    </change>
+  </task-change-set>
+  <task-change-set user="bear" date="2024-02-20T13:41:14.221Z" timestamp="2024-02-20T13:41:14.221Z">
+    <change idref="t14" attribute="internalPrerequisitesString" type="string" from="" to="27FS" resolved="yes"/>
+    <change idref="t15" attribute="effort" type="real" from="18000" to="14400" resolved="yes"/>
+    <change idref="t15" attribute="notesAllowingNil" type="textdata" to="e1xydGYxXGFuc2lcYW5zaWNwZzkzNlxjb2NvYXJ0ZjI3NTkKXGNvY29hdGV4dHNjYWxpbmcwXGNvY29hcGxhdGZvcm0we1xmb250dGJsXGYwXGZuaWxcZmNoYXJzZXQxMzQgUGluZ0ZhbmdTQy1SZWd1bGFyO30Ke1xjb2xvcnRibDtccmVkMjU1XGdyZWVuMjU1XGJsdWUyNTU7XHJlZDg1XGdyZWVuODVcYmx1ZTg1O30Ke1wqXGV4cGFuZGVkY29sb3J0Ymw7O1xjc2dyYXlcYzQwOTIyO30KXHBhcmRcdHg1NjBcdHgxMTIwXHR4MTY4MFx0eDIyNDBcdHgyODAwXHR4MzM2MFx0eDM5MjBcdHg0NDgwXHR4NTA0MFx0eDU2MDBcdHg2MTYwXHR4NjcyMFxwYXJkaXJuYXR1cmFsXHBhcnRpZ2h0ZW5mYWN0b3IwCgpcZjBcZnMyNCBcY2YyIFwnYzlcJ2U4XCdiMVwnYjhcJ2M3XCdlNVwnYmRcJ2UwXCdhM1wnYWNcJ2I1XCdkOFwnYzNcJ2U2XCdjZlwnZmJcJ2M5XCdiMX0=" resolved="yes"/>
+    <change idref="t29" attribute="internalPrerequisitesString" type="string" from="" to="13FS, 27FS" resolved="yes"/>
+    <change idref="t38" to="t29" to-position="3" resolved="yes">
+      <change idref="t38" attribute="effort" type="real" from="28800" to="7200"/>
+      <change idref="t38" attribute="internalAssignments" type="string" from="" to="4"/>
+      <change idref="t38" attribute="isSplitChunk" type="real" from="0" to="1"/>
+      <change idref="t38" attribute="noEarlierThanConstraintDate" type="date" to="2024-02-20T07:00:00.000Z"/>
+      <change idref="t38" attribute="title" type="string" to="餐具清洁 #4"/>
+    </change>
+    <change idref="t42" to="t29" to-position="4" resolved="yes">
+      <change idref="t42" attribute="effort" type="real" from="28800" to="5400"/>
+      <change idref="t42" attribute="internalAssignments" type="string" from="" to="4"/>
+      <change idref="t42" attribute="isSplitChunk" type="real" from="0" to="1"/>
+      <change idref="t42" attribute="noEarlierThanConstraintDate" type="date" to="2024-02-20T10:00:00.000Z"/>
+      <change idref="t42" attribute="title" type="string" to="餐具清洁 #5"/>
+    </change>
+    <change idref="t32" attribute="internalPrerequisitesString" type="string" from="" to="14FS" resolved="yes"/>
+    <change idref="t33" attribute="effort" type="real" from="19800" to="7200" resolved="yes"/>
+    <change idref="t33" attribute="noEarlierThanConstraintDate" type="date" from="2024-02-20T04:00:00.000Z" to="2024-02-20T03:30:00.000Z" resolved="yes"/>
+    <change idref="t35" attribute="effort" type="real" from="10800" to="7200" resolved="yes"/>
+    <change idref="t37" attribute="isGroup" type="real" from="0" to="1" resolved="yes"/>
+    <change idref="t37" attribute="multiResourceWorkType" type="real" from="0" resolved="yes"/>
+    <change idref="t37" attribute="isSplittableTask" type="real" from="1" resolved="yes"/>
+    <change idref="t37" attribute="internalPrerequisitesString" type="string" from="" to="32FS" resolved="yes"/>
+    <change idref="t37" attribute="taskType" type="real" from="0" to="2" resolved="yes"/>
+    <change idref="t37" attribute="title" type="string" from="Task 1" to="烹制菜品" resolved="yes"/>
+    <change idref="t37" attribute="resourceAssignmentType" type="real" from="0" resolved="yes"/>
+    <change idref="t37" attribute="staticCost" type="real" from="0" resolved="yes"/>
+    <change idref="t37" attribute="effort" type="real" from="28800" resolved="yes"/>
+    <change idref="t37" attribute="isSplitChunk" type="real" from="0" resolved="yes"/>
+    <change idref="t37" attribute="scheduleType" type="real" from="0" resolved="yes"/>
+    <change idref="t37" attribute="internalAssignments" type="string" from="" resolved="yes"/>
+    <change idref="t37" attribute="noEarlierThanConstraintDate" type="date" to="2024-02-20T03:00:00.000Z" resolved="yes"/>
+    <change idref="t37" attribute="isSplitTask" type="real" from="0" resolved="yes"/>
+    <change idref="t37" attribute="internalEffortDone" type="real" from="0" resolved="yes"/>
+    <change idref="t41" to="t37" to-position="0" resolved="yes">
+      <change idref="t41" attribute="effort" type="real" from="28800" to="5700"/>
+      <change idref="t41" attribute="internalAssignments" type="string" from="" to="7"/>
+      <change idref="t41" attribute="isSplitTask" type="real" from="0" to="1"/>
+      <change idref="t41" attribute="title" type="string" to="辅料"/>
+    </change>
+    <change idref="t43" to="t37" to-position="1" resolved="yes">
+      <change idref="t43" attribute="effort" type="real" from="28800" to="5700"/>
+      <change idref="t43" attribute="internalAssignments" type="string" from="" to="11"/>
+      <change idref="t43" attribute="isSplitTask" type="real" from="0" to="1"/>
+      <change idref="t43" attribute="title" type="string" to="水台"/>
+    </change>
+    <change idref="t40" to="t37" to-position="2" resolved="yes">
+      <change idref="t40" attribute="effort" type="real" from="28800" to="9900"/>
+      <change idref="t40" attribute="internalAssignments" type="string" from="" to="9"/>
+      <change idref="t40" attribute="isSplitTask" type="real" from="0" to="1"/>
+      <change idref="t40" attribute="title" type="string" to="炒菜"/>
+    </change>
+    <change idref="t48" to="t43" to-position="0" resolved="yes">
+      <change idref="t48" attribute="effort" type="real" from="28800" to="900"/>
+      <change idref="t48" attribute="internalAssignments" type="string" from="" to="11"/>
+      <change idref="t48" attribute="isSplitChunk" type="real" from="0" to="1"/>
+      <change idref="t48" attribute="noEarlierThanConstraintDate" type="date" to="2024-02-20T03:00:00.000Z"/>
+      <change idref="t48" attribute="title" type="string" to="水台 #1"/>
+    </change>
+    <change idref="t49" to="t43" to-position="1" resolved="yes">
+      <change idref="t49" attribute="effort" type="real" from="28800" to="1800"/>
+      <change idref="t49" attribute="internalAssignments" type="string" from="" to="11"/>
+      <change idref="t49" attribute="isSplitChunk" type="real" from="0" to="1"/>
+      <change idref="t49" attribute="noEarlierThanConstraintDate" type="date" to="2024-02-20T04:00:00.000Z"/>
+      <change idref="t49" attribute="title" type="string" to="水台 #2"/>
+    </change>
+    <change idref="t53" to="t43" to-position="2" resolved="yes">
+      <change idref="t53" attribute="effort" type="real" from="28800" to="1800"/>
+      <change idref="t53" attribute="internalAssignments" type="string" from="" to="11"/>
+      <change idref="t53" attribute="isSplitChunk" type="real" from="0" to="1"/>
+      <change idref="t53" attribute="noEarlierThanConstraintDate" type="date" to="2024-02-20T05:00:00.000Z"/>
+      <change idref="t53" attribute="title" type="string" to="水台 #3"/>
+    </change>
+    <change idref="t56" to="t43" to-position="3" resolved="yes">
+      <change idref="t56" attribute="effort" type="real" from="28800" to="1200"/>
+      <change idref="t56" attribute="internalAssignments" type="string" from="" to="11"/>
+      <change idref="t56" attribute="isSplitChunk" type="real" from="0" to="1"/>
+      <change idref="t56" attribute="noEarlierThanConstraintDate" type="date" to="2024-02-20T06:00:00.000Z"/>
+      <change idref="t56" attribute="title" type="string" to="水台 #4"/>
+    </change>
+    <change idref="t50" to="t40" to-position="0" resolved="yes">
+      <change idref="t50" attribute="effort" type="real" from="28800" to="3600"/>
+      <change idref="t50" attribute="internalAssignments" type="string" from="" to="9"/>
+      <change idref="t50" attribute="isSplitChunk" type="real" from="0" to="1"/>
+      <change idref="t50" attribute="noEarlierThanConstraintDate" type="date" to="2024-02-20T03:15:00.000Z"/>
+      <change idref="t50" attribute="title" type="string" to="炒菜 #1"/>
+    </change>
+    <change idref="t51" to="t40" to-position="1" resolved="yes">
+      <change idref="t51" attribute="effort" type="real" from="28800" to="1800"/>
+      <change idref="t51" attribute="internalAssignments" type="string" from="" to="9"/>
+      <change idref="t51" attribute="isSplitChunk" type="real" from="0" to="1"/>
+      <change idref="t51" attribute="noEarlierThanConstraintDate" type="date" to="2024-02-20T04:20:00.000Z"/>
+      <change idref="t51" attribute="title" type="string" to="炒菜 #2"/>
+    </change>
+    <change idref="t54" to="t40" to-position="2" resolved="yes">
+      <change idref="t54" attribute="effort" type="real" from="28800" to="1800"/>
+      <change idref="t54" attribute="internalAssignments" type="string" from="" to="9"/>
+      <change idref="t54" attribute="isSplitChunk" type="real" from="0" to="1"/>
+      <change idref="t54" attribute="noEarlierThanConstraintDate" type="date" to="2024-02-20T05:25:00.000Z"/>
+      <change idref="t54" attribute="title" type="string" to="炒菜 #3"/>
+    </change>
+    <change idref="t57" to="t40" to-position="3" resolved="yes">
+      <change idref="t57" attribute="effort" type="real" from="28800" to="2700"/>
+      <change idref="t57" attribute="internalAssignments" type="string" from="" to="9"/>
+      <change idref="t57" attribute="isSplitChunk" type="real" from="0" to="1"/>
+      <change idref="t57" attribute="noEarlierThanConstraintDate" type="date" to="2024-02-20T06:15:00.000Z"/>
+      <change idref="t57" attribute="title" type="string" to="炒菜 #4"/>
+    </change>
+    <change idref="t46" to="t41" to-position="0" resolved="yes">
+      <change idref="t46" attribute="effort" type="real" from="28800" to="900"/>
+      <change idref="t46" attribute="internalAssignments" type="string" from="" to="7"/>
+      <change idref="t46" attribute="isSplitChunk" type="real" from="0" to="1"/>
+      <change idref="t46" attribute="noEarlierThanConstraintDate" type="date" to="2024-02-20T03:00:00.000Z"/>
+      <change idref="t46" attribute="title" type="string" to="辅料 #1"/>
+    </change>
+    <change idref="t47" to="t41" to-position="1" resolved="yes">
+      <change idref="t47" attribute="effort" type="real" from="28800" to="1800"/>
+      <change idref="t47" attribute="internalAssignments" type="string" from="" to="7"/>
+      <change idref="t47" attribute="isSplitChunk" type="real" from="0" to="1"/>
+      <change idref="t47" attribute="noEarlierThanConstraintDate" type="date" to="2024-02-20T04:00:00.000Z"/>
+      <change idref="t47" attribute="title" type="string" to="辅料 #2"/>
+    </change>
+    <change idref="t52" to="t41" to-position="2" resolved="yes">
+      <change idref="t52" attribute="effort" type="real" from="28800" to="1800"/>
+      <change idref="t52" attribute="internalAssignments" type="string" from="" to="7"/>
+      <change idref="t52" attribute="isSplitChunk" type="real" from="0" to="1"/>
+      <change idref="t52" attribute="noEarlierThanConstraintDate" type="date" to="2024-02-20T05:00:00.000Z"/>
+      <change idref="t52" attribute="title" type="string" to="辅料 #3"/>
+    </change>
+    <change idref="t55" to="t41" to-position="3" resolved="yes">
+      <change idref="t55" attribute="effort" type="real" from="28800" to="1200"/>
+      <change idref="t55" attribute="internalAssignments" type="string" from="" to="7"/>
+      <change idref="t55" attribute="isSplitChunk" type="real" from="0" to="1"/>
+      <change idref="t55" attribute="noEarlierThanConstraintDate" type="date" to="2024-02-20T06:00:00.000Z"/>
+      <change idref="t55" attribute="title" type="string" to="辅料 #4"/>
+    </change>
+  </task-change-set>
+  <task-change-set user="bear" date="2024-02-21T01:32:43.301Z" timestamp="2024-02-21T01:32:43.301Z">
+    <change idref="t15" attribute="effort" type="real" from="14400" to="28800" resolved="yes"/>
+    <change idref="t35" attribute="effort" type="real" from="7200" to="21600" resolved="yes"/>
+  </task-change-set>
+  <resource-change-set user="bear" date="2024-02-20T12:27:11.241Z" timestamp="2024-02-20T12:27:11.241Z">
+    <change idref="r-1" attribute="standardHoursString" type="string" from="-;-;-;-;-;-;-" to="0,86400;0,86400;0,86400;0,86400;0,86400;0,86400;0,86400" resolved="yes"/>
+    <change idref="r2" to="r-1" to-position="1" resolved="yes">
+      <change idref="r2" attribute="name" type="string" from="" to="红白案"/>
+    </change>
+    <change idref="r3" to="r-1" to-position="2" resolved="yes">
+      <change idref="r3" attribute="name" type="string" from="" to="凉菜师傅"/>
+    </change>
+    <change idref="r6" to="r-1" to-position="3" resolved="yes">
+      <change idref="r6" attribute="name" type="string" from="" to="煲汤师傅"/>
+    </change>
+    <change idref="r4" to="r-1" to-position="4" resolved="yes">
+      <change idref="r4" attribute="name" type="string" from="" to="洗碗工"/>
+    </change>
+    <change idref="r7" to="r-1" to-position="5" resolved="yes">
+      <change idref="r7" attribute="name" type="string" from="" to="切配工"/>
+    </change>
+    <change idref="r8" to="r-1" to-position="6" resolved="yes">
+      <change idref="r8" attribute="name" type="string" from="" to="蒸菜师傅"/>
+    </change>
+    <change idref="r9" to="r-1" to-position="7" resolved="yes">
+      <change idref="r9" attribute="name" type="string" from="" to="炒菜师傅"/>
+    </change>
+    <change idref="r10" to="r-1" to-position="8" resolved="yes">
+      <change idref="r10" attribute="name" type="string" from="" to="打荷师傅"/>
+    </change>
+    <change idref="r11" to="r-1" to-position="9" resolved="yes">
+      <change idref="r11" attribute="name" type="string" from="" to="水台师傅"/>
+    </change>
+    <change idref="r12" to="r-1" to-position="10" resolved="yes">
+      <change idref="r12" attribute="name" type="string" from="" to="勤杂工"/>
+    </change>
+    <change idref="r1" attribute="name" type="string" from="Resource 1" to="采购" resolved="yes"/>
+  </resource-change-set>
+  <resource-change-set user="bear" date="2024-02-20T12:47:54.519Z" timestamp="2024-02-20T12:47:54.519Z">
+    <change idref="r-1" attribute="standardHoursString" type="string" from="0,86400;0,86400;0,86400;0,86400;0,86400;0,86400;0,86400" to="18000,86400;18000,86400;18000,86400;18000,86400;18000,86400;18000,86400;18000,86400" resolved="yes"/>
+    <change idref="r2" from="r-1" from-position="1" resolved="yes">
+      <change idref="r2" attribute="name" type="string" from="" to="红白案"/>
+    </change>
+    <change idref="r13" to="r-1" to-position="9" resolved="yes">
+      <change idref="r13" attribute="name" type="string" from="" to="面点师傅"/>
+    </change>
+    <change idref="r7" attribute="name" type="string" from="切配工" to="切配师傅" resolved="yes"/>
+  </resource-change-set>
+  <resource-change-set user="bear" date="2024-02-20T13:12:54.771Z" timestamp="2024-02-20T13:12:54.771Z">
+    <change idref="r14" to="r-1" to-position="6" resolved="yes">
+      <change idref="r14" attribute="name" type="string" from="" to="熟食师傅"/>
+    </change>
+  </resource-change-set>
+  <resource-change-set user="bear" date="2024-02-20T13:41:14.219Z" timestamp="2024-02-20T13:41:14.219Z">
+    <change idref="r10" attribute="standardHoursString" type="string" from="-;-;-;-;-;-;-" to="14400,75600;14400,75600;14400,75600;14400,75600;14400,75600;14400,75600;14400,75600" resolved="yes"/>
+  </resource-change-set>
+  <metadata-change-set user="bear" date="2024-02-20T12:27:11.241Z" timestamp="2024-02-20T12:27:11.241Z">
+    <change idref="m1" attribute="scheduleGranularity" type="real" from="0" to="1" resolved="yes"/>
+    <change idref="m1" attribute="fixedDate" type="date" from="2007-01-01T20:00:00.000Z" to="2024-02-19T21:00:00.000Z" resolved="yes"/>
+    <change idref="m1" attribute="currencyName" type="string" to="¥1,234.56" resolved="yes"/>
+  </metadata-change-set>
+  <metadata-change-set user="bear" date="2024-02-20T13:12:54.771Z" timestamp="2024-02-20T13:12:54.771Z">
+    <change idref="m1" attribute="scheduleGranularity" type="real" from="1" to="0" resolved="yes"/>
+  </metadata-change-set>
+</changelog>

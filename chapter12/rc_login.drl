@@ -1,0 +1,20 @@
+package rc_rules;
+
+import com.javabook.chapter12.entity.LoginEvent
+import com.javabook.chapter12.service.EventService
+
+global EventService eventService
+
+// 每次都登录都会执行
+rule "rc_login"
+    no-loop false
+    lock-on-active true
+    when
+        $event : LoginEvent(level == 0)
+    then
+        boolean flag = eventService.insertEvent($event);
+        if (flag) {
+            System.out.println("保存用户登录事件");
+            delete($event);
+        }
+end

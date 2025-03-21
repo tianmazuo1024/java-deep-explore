@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario xmlns="http://www.omnigroup.com/namespace/OmniPlan/v2" xmlns:opns="http://www.omnigroup.com/namespace/OmniPlan/v2" id="aRTUY5Js_RO">
+  <start-date>2024-02-22T00:30:00.000Z</start-date>
+  <prototype-task>
+    <task id="t-2">
+      <title>Task 1</title>
+      <effort>28800</effort>
+    </task>
+  </prototype-task>
+  <prototype-task>
+    <task id="t-3">
+      <title>Milestone 1</title>
+      <type>milestone</type>
+    </task>
+  </prototype-task>
+  <prototype-task>
+    <task id="t-4">
+      <title>Group 1</title>
+      <type>group</type>
+    </task>
+  </prototype-task>
+  <prototype-resource>
+    <resource id="r-2">
+      <name>Resource 1</name>
+      <type>Staff</type>
+    </resource>
+  </prototype-resource>
+  <prototype-resource>
+    <resource id="r-3">
+      <name>Equipment 1</name>
+      <type>Equipment</type>
+    </resource>
+  </prototype-resource>
+  <prototype-resource>
+    <resource id="r-4">
+      <name>Material 1</name>
+      <type>Material</type>
+      <units-available>0</units-available>
+      <efficiency>0</efficiency>
+    </resource>
+  </prototype-resource>
+  <prototype-resource>
+    <resource id="r-5">
+      <name>Group 1</name>
+      <type>Group</type>
+    </resource>
+  </prototype-resource>
+  <top-resource idref="r-1"/>
+  <resource id="r-1">
+    <name/>
+    <type>Group</type>
+    <schedule>
+      <schedule-day day-of-week="sunday"/>
+      <schedule-day day-of-week="monday">
+        <time-span start-time="39600" end-time="61200"/>
+      </schedule-day>
+      <schedule-day day-of-week="tuesday">
+        <time-span start-time="39600" end-time="61200"/>
+      </schedule-day>
+      <schedule-day day-of-week="wednesday">
+        <time-span start-time="39600" end-time="61200"/>
+      </schedule-day>
+      <schedule-day day-of-week="thursday">
+        <time-span start-time="39600" end-time="61200"/>
+      </schedule-day>
+      <schedule-day day-of-week="friday">
+        <time-span start-time="39600" end-time="61200"/>
+      </schedule-day>
+      <schedule-day day-of-week="saturday"/>
+      <calendar name="Overtime" editable="yes" overtime="yes"/>
+      <calendar name="Time Off" editable="yes" overtime="no"/>
+    </schedule>
+    <child-resource idref="r1"/>
+  </resource>
+  <resource id="r1">
+    <name>Resource 1</name>
+    <type>Staff</type>
+  </resource>
+  <top-task idref="t-1"/>
+  <task id="t-1">
+    <type>group</type>
+    <child-task idref="t1"/>
+    <child-task idref="t4"/>
+    <child-task idref="t2"/>
+    <child-task idref="t5"/>
+    <child-task idref="t3"/>
+    <child-task idref="t13"/>
+    <child-task idref="t6"/>
+  </task>
+  <task id="t1">
+    <title>买菜</title>
+    <effort>3600</effort>
+    <start-constraint-date>2024-02-22T03:30:00.000Z</start-constraint-date>
+    <start-no-earlier-than>2024-02-22T03:30:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t2">
+    <title>摘菜</title>
+    <effort>1800</effort>
+    <start-constraint-date>2024-02-22T04:30:00.000Z</start-constraint-date>
+    <start-no-earlier-than>2024-02-22T04:30:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t3">
+    <title>炒菜</title>
+    <effort>900</effort>
+    <start-constraint-date>2024-02-22T05:15:00.000Z</start-constraint-date>
+    <prerequisite-task idref="t4" kind="FF"/>
+    <prerequisite-task idref="t5"/>
+    <start-no-earlier-than>2024-02-22T05:15:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t4">
+    <title>蒸饭</title>
+    <effort>3600</effort>
+    <start-constraint-date>2024-02-22T04:30:00.000Z</start-constraint-date>
+    <note>
+      <text>
+        <p>
+          <run>
+            <style>
+              <value key="font-size">16</value>
+            </style>
+            <lit>一般饭蒸熟后就会一直热着，直到菜都炒好才开吃，所以它和炒菜的关系就是典型的“</lit>
+          </run>
+          <run>
+            <style>
+              <value key="font-fill">
+                <color r="0.877134" g="0.130792" b="0.0894923" archive="YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGmCwwXHR4lVSRudWxs1Q0ODxAREhMUFRZcTlNDb21wb25lbnRzVU5TUkdCXE5TQ29sb3JTcGFjZV8QEk5TQ3VzdG9tQ29sb3JTcGFjZVYkY2xhc3NPECgwLjg3NzEzNDIxNjYgMC4xMzA3OTE1MTIgMC4wODk0OTIzMzc3OSAxTxARMC45MzM0NDQ5NzY4IDAgMAAQAYACgAXTGBEZGhscVU5TSUNDWU5TU3BhY2VJRIADgAQQDE8RAhgAAAIYYXBwbAQAAABtbnRyUkdCIFhZWiAH5gABAAEAAAAAAABhY3NwQVBQTAAAAABBUFBMAAAAAAAAAAAAAAAAAAAAAAAA9tYAAQAAAADTLWFwcGzs/aOOOIVHw220vU962hgvAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAApkZXNjAAAA/AAAADBjcHJ0AAABLAAAAFB3dHB0AAABfAAAABRyWFlaAAABkAAAABRnWFlaAAABpAAAABRiWFlaAAABuAAAABRyVFJDAAABzAAAACBjaGFkAAAB7AAAACxiVFJDAAABzAAAACBnVFJDAAABzAAAACBtbHVjAAAAAAAAAAEAAAAMZW5VUwAAABQAAAAcAEQAaQBzAHAAbABhAHkAIABQADNtbHVjAAAAAAAAAAEAAAAMZW5VUwAAADQAAAAcAEMAbwBwAHkAcgBpAGcAaAB0ACAAQQBwAHAAbABlACAASQBuAGMALgAsACAAMgAwADIAMlhZWiAAAAAAAAD21QABAAAAANMsWFlaIAAAAAAAAIPfAAA9v////7tYWVogAAAAAAAASr8AALE3AAAKuVhZWiAAAAAAAAAoOAAAEQsAAMi5cGFyYQAAAAAAAwAAAAJmZgAA8qcAAA1ZAAAT0AAACltzZjMyAAAAAAABDEIAAAXe///zJgAAB5MAAP2Q///7ov///aMAAAPcAADAbtIfICEiWiRjbGFzc25hbWVYJGNsYXNzZXNcTlNDb2xvclNwYWNloiMkXE5TQ29sb3JTcGFjZVhOU09iamVjdNIfICYnV05TQ29sb3KiJiQACAARABoAJAApADIANwBJAEwAUQBTAFoAYABrAHgAfgCLAKAApwDSAOYA6ADqAOwA8wD5AQMBBQEHAQkDJQMqAzUDPgNLA04DWwNkA2kDcQAAAAAAAAIBAAAAAAAAACgAAAAAAAAAAAAAAAAAAAN0"/>
+              </value>
+              <value key="font-italic">yes</value>
+              <value key="font-size">16</value>
+              <value key="font-weight">9</value>
+            </style>
+            <lit>完成-完成</lit>
+          </run>
+          <run>
+            <style>
+              <value key="font-size">16</value>
+            </style>
+            <lit>”关系</lit>
+          </run>
+        </p>
+      </text>
+    </note>
+    <prerequisite-task idref="t1"/>
+    <start-no-earlier-than>2024-02-22T04:30:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t5">
+    <title>洗菜</title>
+    <effort>900</effort>
+    <start-constraint-date>2024-02-22T05:00:00.000Z</start-constraint-date>
+    <prerequisite-task idref="t2"/>
+    <start-no-earlier-than>2024-02-22T05:00:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t6">
+    <title>洗碗</title>
+    <effort>600</effort>
+    <start-constraint-date>2024-02-22T06:00:00.000Z</start-constraint-date>
+    <prerequisite-task idref="t13"/>
+    <start-no-earlier-than>2024-02-22T06:00:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t13">
+    <title>吃饭</title>
+    <effort>1800</effort>
+    <start-constraint-date>2024-02-22T05:30:00.000Z</start-constraint-date>
+    <recalculate>effort</recalculate>
+    <fixed-duration>1800</fixed-duration>
+    <prerequisite-task idref="t3"/>
+    <prerequisite-task idref="t4"/>
+    <start-no-earlier-than>2024-02-22T05:30:00.000Z</start-no-earlier-than>
+  </task>
+  <critical-path root="-1" enabled="false" resources="false">
+    <color space="srgb" r="1" g="0.5" b="0.5"/>
+  </critical-path>
+</scenario>

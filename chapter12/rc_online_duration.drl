@@ -1,0 +1,27 @@
+package rc_rules;
+
+import com.javabook.chapter12.entity.LoginEvent
+import com.javabook.chapter12.service.EventService
+import com.javabook.chapter12.service.UserService
+
+global EventService eventService
+global UserService userService
+
+// 在网时长
+rule "rc_online_duration"
+    no-loop false
+    lock-on-active true
+    when
+        $event : LoginEvent(level == 0);
+    then
+        if (1 == eventService.onlineDuration($event)) {
+            // 保存风险事件
+            boolean flag1 = eventService.insertRiskEvent($event, "用户在网时长已超过24小时");
+            // 锁定用户账户
+            boolean flag2 = userService.lock($event.getUsername());
+            if (flag1 && flag2) {
+                System.out.println("用户在网时长异常，锁定成功");
+            }
+            delete($event);
+        }
+end

@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario xmlns="http://www.omnigroup.com/namespace/OmniPlan/v2" xmlns:opns="http://www.omnigroup.com/namespace/OmniPlan/v2" id="fLQvR5n2VFQ">
+  <start-date>2024-02-19T21:00:00.000Z</start-date>
+  <prototype-task>
+    <task id="t-2">
+      <title>Task 1</title>
+      <effort>28800</effort>
+    </task>
+  </prototype-task>
+  <prototype-task>
+    <task id="t-3">
+      <title>Milestone 1</title>
+      <type>milestone</type>
+    </task>
+  </prototype-task>
+  <prototype-task>
+    <task id="t-4">
+      <title>Group 1</title>
+      <type>group</type>
+    </task>
+  </prototype-task>
+  <prototype-resource>
+    <resource id="r-2">
+      <name>Resource 1</name>
+      <type>Staff</type>
+    </resource>
+  </prototype-resource>
+  <prototype-resource>
+    <resource id="r-3">
+      <name>Equipment 1</name>
+      <type>Equipment</type>
+    </resource>
+  </prototype-resource>
+  <prototype-resource>
+    <resource id="r-4">
+      <name>Material 1</name>
+      <type>Material</type>
+      <units-available>0</units-available>
+      <efficiency>0</efficiency>
+    </resource>
+  </prototype-resource>
+  <prototype-resource>
+    <resource id="r-5">
+      <name>Group 1</name>
+      <type>Group</type>
+    </resource>
+  </prototype-resource>
+  <top-resource idref="r-1"/>
+  <resource id="r-1">
+    <name/>
+    <type>Group</type>
+    <schedule>
+      <schedule-day day-of-week="sunday">
+        <time-span start-time="18000" end-time="86400"/>
+      </schedule-day>
+      <schedule-day day-of-week="monday">
+        <time-span start-time="18000" end-time="86400"/>
+      </schedule-day>
+      <schedule-day day-of-week="tuesday">
+        <time-span start-time="18000" end-time="86400"/>
+      </schedule-day>
+      <schedule-day day-of-week="wednesday">
+        <time-span start-time="18000" end-time="86400"/>
+      </schedule-day>
+      <schedule-day day-of-week="thursday">
+        <time-span start-time="18000" end-time="86400"/>
+      </schedule-day>
+      <schedule-day day-of-week="friday">
+        <time-span start-time="18000" end-time="86400"/>
+      </schedule-day>
+      <schedule-day day-of-week="saturday">
+        <time-span start-time="18000" end-time="86400"/>
+      </schedule-day>
+      <calendar name="Overtime" editable="yes" overtime="yes"/>
+      <calendar name="Time Off" editable="yes" overtime="no"/>
+    </schedule>
+    <child-resource idref="r1"/>
+    <child-resource idref="r3"/>
+    <child-resource idref="r6"/>
+    <child-resource idref="r4"/>
+    <child-resource idref="r7"/>
+    <child-resource idref="r8"/>
+    <child-resource idref="r14"/>
+    <child-resource idref="r9"/>
+    <child-resource idref="r10"/>
+    <child-resource idref="r11"/>
+    <child-resource idref="r13"/>
+    <child-resource idref="r12"/>
+  </resource>
+  <resource id="r1">
+    <name>采购</name>
+    <type>Staff</type>
+  </resource>
+  <resource id="r3">
+    <name>凉菜师傅</name>
+    <type>Staff</type>
+  </resource>
+  <resource id="r4">
+    <name>洗碗工</name>
+    <type>Staff</type>
+  </resource>
+  <resource id="r6">
+    <name>煲汤师傅</name>
+    <type>Staff</type>
+  </resource>
+  <resource id="r7">
+    <name>切配师傅</name>
+    <type>Staff</type>
+  </resource>
+  <resource id="r8">
+    <name>蒸菜师傅</name>
+    <type>Staff</type>
+  </resource>
+  <resource id="r9">
+    <name>炒菜师傅</name>
+    <type>Staff</type>
+  </resource>
+  <resource id="r10">
+    <name>打荷师傅</name>
+    <type>Staff</type>
+    <schedule>
+      <schedule-day day-of-week="sunday">
+        <time-span start-time="14400" end-time="75600"/>
+      </schedule-day>
+      <schedule-day day-of-week="monday">
+        <time-span start-time="14400" end-time="75600"/>
+      </schedule-day>
+      <schedule-day day-of-week="tuesday">
+        <time-span start-time="14400" end-time="75600"/>
+      </schedule-day>
+      <schedule-day day-of-week="wednesday">
+        <time-span start-time="14400" end-time="75600"/>
+      </schedule-day>
+      <schedule-day day-of-week="thursday">
+        <time-span start-time="14400" end-time="75600"/>
+      </schedule-day>
+      <schedule-day day-of-week="friday">
+        <time-span start-time="14400" end-time="75600"/>
+      </schedule-day>
+      <schedule-day day-of-week="saturday">
+        <time-span start-time="14400" end-time="75600"/>
+      </schedule-day>
+      <calendar name="Time Off" editable="yes" overtime="no"/>
+      <calendar name="Overtime" editable="yes" overtime="yes"/>
+    </schedule>
+  </resource>
+  <resource id="r11">
+    <name>水台师傅</name>
+    <type>Staff</type>
+  </resource>
+  <resource id="r12">
+    <name>勤杂工</name>
+    <type>Staff</type>
+  </resource>
+  <resource id="r13">
+    <name>面点师傅</name>
+    <type>Staff</type>
+  </resource>
+  <resource id="r14">
+    <name>熟食师傅</name>
+    <type>Staff</type>
+  </resource>
+  <top-task idref="t-1"/>
+  <task id="t-1">
+    <type>group</type>
+    <child-task idref="t5"/>
+    <child-task idref="t15"/>
+    <child-task idref="t13"/>
+    <child-task idref="t27"/>
+    <child-task idref="t29"/>
+    <child-task idref="t14"/>
+    <child-task idref="t32"/>
+    <child-task idref="t37"/>
+  </task>
+  <task id="t5">
+    <title>生鲜采买</title>
+    <effort>7200</effort>
+    <start-constraint-date>2024-02-19T21:00:00.000Z</start-constraint-date>
+    <assignment idref="r1"/>
+    <start-no-earlier-than>2024-02-19T21:00:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t13">
+    <title>早餐前准备</title>
+    <type>group</type>
+    <start-constraint-date>2024-02-19T22:00:00.000Z</start-constraint-date>
+    <child-task idref="t16"/>
+    <child-task idref="t17"/>
+    <child-task idref="t18"/>
+    <child-task idref="t24"/>
+    <start-no-earlier-than>2024-02-19T22:00:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t14">
+    <title>预制菜品</title>
+    <type>group</type>
+    <start-constraint-date>2024-02-19T23:00:00.000Z</start-constraint-date>
+    <child-task idref="t25"/>
+    <child-task idref="t26"/>
+    <prerequisite-task idref="t27"/>
+    <start-no-earlier-than>2024-02-19T23:00:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t15">
+    <title>后厨清洁</title>
+    <split/>
+    <effort>28800</effort>
+    <child-task idref="t22"/>
+    <child-task idref="t23"/>
+    <child-task idref="t35"/>
+    <note>
+      <text>
+        <p>
+          <run>
+            <lit>设备清洁，地面消杀</lit>
+          </run>
+        </p>
+      </text>
+    </note>
+  </task>
+  <task id="t16">
+    <title>辅料</title>
+    <effort>3600</effort>
+    <assignment idref="r7"/>
+  </task>
+  <task id="t17">
+    <title>水台</title>
+    <effort>3600</effort>
+    <assignment idref="r11"/>
+  </task>
+  <task id="t18">
+    <title>面点</title>
+    <effort>3600</effort>
+    <assignment idref="r13"/>
+  </task>
+  <task id="t22">
+    <title>后厨清洁</title>
+    <effort>3600</effort>
+    <start-constraint-date>2024-02-19T22:00:00.000Z</start-constraint-date>
+    <assignment idref="r12"/>
+    <start-no-earlier-than>2024-02-19T22:00:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t23">
+    <title>后厨清洁</title>
+    <effort>3600</effort>
+    <start-constraint-date>2024-02-20T01:00:00.000Z</start-constraint-date>
+    <assignment idref="r12"/>
+    <start-no-earlier-than>2024-02-20T01:00:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t24">
+    <title>熟食</title>
+    <effort>3600</effort>
+    <assignment idref="r14"/>
+  </task>
+  <task id="t25">
+    <title>预制菜</title>
+    <effort>14400</effort>
+    <assignment idref="r9"/>
+    <assignment idref="r10"/>
+  </task>
+  <task id="t26">
+    <title>煲汤</title>
+    <effort>10800</effort>
+    <assignment idref="r6"/>
+  </task>
+  <task id="t27">
+    <title>准备早餐</title>
+    <effort>1800</effort>
+    <start-constraint-date>2024-02-19T22:30:00.000Z</start-constraint-date>
+    <assignment idref="r9"/>
+    <start-no-earlier-than>2024-02-19T22:30:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t29">
+    <title>餐具清洁</title>
+    <split/>
+    <effort>28800</effort>
+    <child-task idref="t30"/>
+    <child-task idref="t31"/>
+    <child-task idref="t33"/>
+    <child-task idref="t38"/>
+    <child-task idref="t42"/>
+    <note>
+      <text>
+        <p>
+          <run>
+            <lit>一冲、二洗、三清</lit>
+          </run>
+        </p>
+      </text>
+    </note>
+    <prerequisite-task idref="t13"/>
+    <prerequisite-task idref="t27"/>
+  </task>
+  <task id="t30">
+    <title>餐具清洁</title>
+    <effort>3600</effort>
+    <start-constraint-date>2024-02-19T23:00:00.000Z</start-constraint-date>
+    <assignment idref="r4"/>
+    <start-no-earlier-than>2024-02-19T23:00:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t31">
+    <title>餐具清洁</title>
+    <effort>5400</effort>
+    <start-constraint-date>2024-02-20T01:00:00.000Z</start-constraint-date>
+    <assignment idref="r4"/>
+    <start-no-earlier-than>2024-02-20T01:00:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t32">
+    <title>中餐前准备</title>
+    <type>group</type>
+    <start-constraint-date>2024-02-20T02:00:00.000Z</start-constraint-date>
+    <child-task idref="t34"/>
+    <child-task idref="t36"/>
+    <prerequisite-task idref="t14"/>
+    <start-no-earlier-than>2024-02-20T02:00:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t33">
+    <title>餐具清洁</title>
+    <effort>7200</effort>
+    <start-constraint-date>2024-02-20T03:30:00.000Z</start-constraint-date>
+    <assignment idref="r4"/>
+    <start-no-earlier-than>2024-02-20T03:30:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t34">
+    <title>辅料</title>
+    <effort>3600</effort>
+    <assignment idref="r7"/>
+  </task>
+  <task id="t35">
+    <title>后厨清洁</title>
+    <effort>21600</effort>
+    <start-constraint-date>2024-02-20T04:00:00.000Z</start-constraint-date>
+    <assignment idref="r12"/>
+    <start-no-earlier-than>2024-02-20T04:00:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t36">
+    <title>水台</title>
+    <effort>3600</effort>
+    <assignment idref="r11"/>
+  </task>
+  <task id="t37">
+    <title>烹制菜品</title>
+    <type>group</type>
+    <start-constraint-date>2024-02-20T03:00:00.000Z</start-constraint-date>
+    <child-task idref="t41"/>
+    <child-task idref="t43"/>
+    <child-task idref="t40"/>
+    <prerequisite-task idref="t32"/>
+    <start-no-earlier-than>2024-02-20T03:00:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t38">
+    <title>餐具清洁</title>
+    <effort>7200</effort>
+    <start-constraint-date>2024-02-20T07:00:00.000Z</start-constraint-date>
+    <assignment idref="r4"/>
+    <start-no-earlier-than>2024-02-20T07:00:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t40">
+    <title>炒菜</title>
+    <split/>
+    <effort>9900</effort>
+    <child-task idref="t50"/>
+    <child-task idref="t51"/>
+    <child-task idref="t54"/>
+    <child-task idref="t57"/>
+  </task>
+  <task id="t41">
+    <title>辅料</title>
+    <split/>
+    <effort>5700</effort>
+    <child-task idref="t46"/>
+    <child-task idref="t47"/>
+    <child-task idref="t52"/>
+    <child-task idref="t55"/>
+  </task>
+  <task id="t42">
+    <title>餐具清洁</title>
+    <effort>5400</effort>
+    <start-constraint-date>2024-02-20T10:00:00.000Z</start-constraint-date>
+    <assignment idref="r4"/>
+    <start-no-earlier-than>2024-02-20T10:00:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t43">
+    <title>水台</title>
+    <split/>
+    <effort>5700</effort>
+    <child-task idref="t48"/>
+    <child-task idref="t49"/>
+    <child-task idref="t53"/>
+    <child-task idref="t56"/>
+  </task>
+  <task id="t46">
+    <title>辅料</title>
+    <effort>900</effort>
+    <start-constraint-date>2024-02-20T03:00:00.000Z</start-constraint-date>
+    <assignment idref="r7"/>
+    <start-no-earlier-than>2024-02-20T03:00:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t47">
+    <title>辅料</title>
+    <effort>1800</effort>
+    <start-constraint-date>2024-02-20T04:00:00.000Z</start-constraint-date>
+    <assignment idref="r7"/>
+    <start-no-earlier-than>2024-02-20T04:00:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t48">
+    <title>水台</title>
+    <effort>900</effort>
+    <start-constraint-date>2024-02-20T03:00:00.000Z</start-constraint-date>
+    <assignment idref="r11"/>
+    <start-no-earlier-than>2024-02-20T03:00:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t49">
+    <title>水台</title>
+    <effort>1800</effort>
+    <start-constraint-date>2024-02-20T04:00:00.000Z</start-constraint-date>
+    <assignment idref="r11"/>
+    <start-no-earlier-than>2024-02-20T04:00:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t50">
+    <title>炒菜</title>
+    <effort>3600</effort>
+    <start-constraint-date>2024-02-20T03:15:00.000Z</start-constraint-date>
+    <assignment idref="r9"/>
+    <start-no-earlier-than>2024-02-20T03:15:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t51">
+    <title>炒菜</title>
+    <effort>1800</effort>
+    <start-constraint-date>2024-02-20T04:20:00.000Z</start-constraint-date>
+    <assignment idref="r9"/>
+    <start-no-earlier-than>2024-02-20T04:20:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t52">
+    <title>辅料</title>
+    <effort>1800</effort>
+    <start-constraint-date>2024-02-20T05:00:00.000Z</start-constraint-date>
+    <assignment idref="r7"/>
+    <start-no-earlier-than>2024-02-20T05:00:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t53">
+    <title>水台</title>
+    <effort>1800</effort>
+    <start-constraint-date>2024-02-20T05:00:00.000Z</start-constraint-date>
+    <assignment idref="r11"/>
+    <start-no-earlier-than>2024-02-20T05:00:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t54">
+    <title>炒菜</title>
+    <effort>1800</effort>
+    <start-constraint-date>2024-02-20T05:25:00.000Z</start-constraint-date>
+    <assignment idref="r9"/>
+    <start-no-earlier-than>2024-02-20T05:25:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t55">
+    <title>辅料</title>
+    <effort>1200</effort>
+    <start-constraint-date>2024-02-20T06:00:00.000Z</start-constraint-date>
+    <assignment idref="r7"/>
+    <start-no-earlier-than>2024-02-20T06:00:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t56">
+    <title>水台</title>
+    <effort>1200</effort>
+    <start-constraint-date>2024-02-20T06:00:00.000Z</start-constraint-date>
+    <assignment idref="r11"/>
+    <start-no-earlier-than>2024-02-20T06:00:00.000Z</start-no-earlier-than>
+  </task>
+  <task id="t57">
+    <title>炒菜</title>
+    <effort>2700</effort>
+    <start-constraint-date>2024-02-20T06:15:00.000Z</start-constraint-date>
+    <assignment idref="r9"/>
+    <start-no-earlier-than>2024-02-20T06:15:00.000Z</start-no-earlier-than>
+  </task>
+  <critical-path root="-1" enabled="false" resources="false">
+    <color space="srgb" r="1" g="0.5" b="0.5"/>
+  </critical-path>
+</scenario>

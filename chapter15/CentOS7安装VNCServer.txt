@@ -1,0 +1,21 @@
+# 安装VNC服务器
+yum install tigervnc-server -y
+# 配置VNC
+cp /lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:1.service
+vi /etc/systemd/system/vncserver@:1.service
+# 找到下面这一行
+ExecStart=/usr/bin/vncserver_wrapper <USER> %i
+# 用root替换掉
+ExecStart=/usr/bin/vncserver_wrapper root %i
+# 重启systemd
+systemctl daemon-reload
+# 设置服务密码
+vncpasswd
+# 永久启用服务
+systemctl enable vncserver@:1.service
+# 启动、重启或停止服务
+systemctl start vncserver@:1.service
+systemctl restart vncserver@:1.service
+systemctl stop vncserver@:1.service
+# 启动状态查看
+systemctl status vncserver@:1.service

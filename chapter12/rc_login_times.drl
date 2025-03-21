@@ -1,0 +1,34 @@
+package rc_rules;
+
+import com.javabook.chapter12.entity.LoginEvent
+import com.javabook.chapter12.service.BlackListService
+import com.javabook.chapter12.service.EventService
+import com.javabook.chapter12.service.UserService
+
+global BlackListService blackListService
+global EventService eventService
+global UserService userService
+
+// 登录次数
+rule "rc_login_times"
+    no-loop false
+    lock-on-active true
+    when
+        $event : LoginEvent(level == 0);
+    then
+        long times = eventService.loginTimes($event) + 1;
+        System.out.println("近一分钟同一用户登录次数：" + times);
+        // 登录次数大于3次
+        if (3 < times) {
+            // 保存风险事件
+            boolean flag1 = eventService.insertRiskEvent($event, "用户一分钟内登录频繁");
+            // 加入黑名单
+            boolean flag2 = blackListService.save($event.getUsername(), "用户登录频繁");
+            // 锁定用户账户
+            boolean flag3 = userService.lock($event.getUsername());
+            if (flag1 && flag2 && flag3) {
+                System.out.println("用户近一分钟登录异常，锁定成功");
+            }
+            delete($event);
+        }
+end

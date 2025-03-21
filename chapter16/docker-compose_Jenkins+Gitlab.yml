@@ -1,0 +1,37 @@
+version: '3.6'
+services:
+  jenkins:
+    image: jenkins/jenkins:latest
+    container_name: jenkins
+    user: root
+    restart: always
+    privileged: true
+    ports:
+      - 9528:9528
+      - 50000:50000
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./data/:/var/jenkins_home/
+      - /usr/bin/docker:/usr/bin/docker
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/docker/daemon.json:/etc/docker/daemon.json
+
+  gitlab:
+    image: gitlab/gitlab-ce:16.9.2-ce.0
+    container_name: gitlab
+    restart: always
+    hostname: localhost
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://localhost:9529'
+        gitlab_rails['gitlab_shell_ssh_port'] = 2222
+    ports:
+      - 9529:9529
+      - 443:443
+      - 2222:2222
+    volumes:
+      - ./config:/etc/gitlab
+      - ./logs:/var/log/gitlab
+      - ./data:/var/opt/gitlab
+    shm_size: '256m'

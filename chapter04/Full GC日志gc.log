@@ -1,0 +1,11 @@
+[ParNew (promotion failed): 7299K->8065K(9216K), 0.0068091 secs]
+[CMS: 8194K->6897K(10240K), 0.0028832 secs] 11395K->6897K(19456K), [Metaspace: 2565K->2565K(1056768K)], 0.0100622 secs]
+
+Heap
+ par new generation   total 9216K, used 2294K [0x00000000fec00000, 0x00000000ff600000, 0x00000000ff600000)
+  eden space 8192K,  28% used [0x00000000fec00000, 0x00000000fee3d8f0, 0x00000000ff400000)
+  from space 1024K,   0% used [0x00000000ff500000, 0x00000000ff500000, 0x00000000ff600000)
+  to   space 1024K,   0% used [0x00000000ff400000, 0x00000000ff400000, 0x00000000ff500000)
+ concurrent mark-sweep generation total 10240K, used 6897K [0x00000000ff600000, 0x0000000100000000, 0x0000000100000000)
+ Metaspace       used 2573K, capacity 4486K, committed 4864K, reserved 1056768K
+  class space    used 281K, capacity 386K, committed 512K, reserved 1048576K

@@ -1,0 +1,7 @@
+version: '3.7'
+services:
+    web:
+        image: javabook-server02:latest
+        ports:
+            - '9090:9090'
+        container_name: javabook-server02

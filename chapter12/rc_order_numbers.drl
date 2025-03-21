@@ -1,0 +1,29 @@
+package rc_rules;
+
+import com.javabook.chapter12.entity.LoginEvent
+import com.javabook.chapter12.service.EventService
+import com.javabook.chapter12.service.OrderService
+import com.javabook.chapter12.service.UserService
+
+global EventService eventService
+global OrderService orderService
+global UserService userService
+
+// 在凌晨3～5点创建3个以上的未支付订单
+rule "rc_order_numbers"
+    no-loop false
+    lock-on-active true
+    when
+        $event : LoginEvent(level == 0)
+    then
+        if(orderService.getOrderNumber($event.getUsername()) > 3) {
+            // 保存风险事件
+            boolean flag1 = eventService.insertRiskEvent($event, "凌晨3～5点创建3个以上的未支付订单");
+            // 锁定用户账户
+            boolean flag2 = userService.lock($event.getUsername());
+            if (flag1 && flag2) {
+                System.out.println("用户创建订单异常，锁定成功");
+            }
+            delete($event);
+        }
+end

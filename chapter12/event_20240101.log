@@ -1,0 +1,25 @@
+{
+	"user_id": 1,
+	"event_id": "1",
+	"event_behavior_name": "点击",
+	"event_target_name": "领券",
+	"event_source": "用户服务",
+	"event_level": "普通",
+	"event_name": "登录失败",
+	"event_type": "登录",
+	"event_time": "2024-01-01 00:03:00",
+	"event_context": {
+		"device": {
+			"ip": "8.8.8.8",
+			"imei": "1234567890",
+			"imsi": "0987654321"
+		},
+		"profile": {
+			"grade": "普通",
+      "region": "开曼群岛",
+		},
+		"product": {
+			"price": "19.0"
+		}
+	}
+}

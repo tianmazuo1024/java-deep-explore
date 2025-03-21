@@ -1,0 +1,59 @@
+// 包名
+package buy_money_rules;
+
+import com.javabook.chapter12.entity.Coupon;
+// 全局变量
+global Coupon coupon
+
+// 声明规则名称，必须唯一
+rule "point0"
+    // 非循环执行
+    no-loop false
+    // 加强no-loop，避免当前的规则被反复执行
+    lock-on-active true
+    // 设置规则执行的优先级，数字越大优先级越高。规则很少时可以不写
+    salience 1
+    // 条件语句，相当于if
+    when
+        // 表示定义一个类型为Coupon的变量$coupon
+        $coupon : Coupon(buyMoney <= 100)
+    // 根据条件的结果执行动作，相当于紧跟在if后的业务逻辑部分
+    then
+        // 真正的业务规则
+        $coupon.setPoint(0);
+        // 直接更新对象
+        update($coupon);
+end
+
+rule "point100"
+    no-loop false
+    lock-on-active true
+    salience 1
+    when
+        $coupon : Coupon(buyMoney > 100 && buyMoney <= 500)
+    then
+        $coupon.setPoint($coupon.getPoint() + 10);
+        update($coupon);
+end
+
+rule "point500"
+    no-loop false
+    lock-on-active true
+    salience 1
+    when
+        $coupon : Coupon(buyMoney > 500 && buyMoney <= 1000)
+    then
+        $coupon.setPoint($coupon.getPoint() + 50);
+        update($coupon);
+end
+
+rule "point1000"
+    no-loop false
+    lock-on-active true
+    salience 1
+    when
+        $coupon : Coupon(buyMoney > 1000)
+    then
+        $coupon.setPoint($coupon.getPoint() + 100);
+        update($coupon);
+end

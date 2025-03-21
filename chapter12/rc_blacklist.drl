@@ -1,0 +1,25 @@
+package rc_rules;
+
+import com.javabook.chapter12.entity.LoginEvent
+import com.javabook.chapter12.service.BlackListService
+import com.javabook.chapter12.service.EventService
+
+global BlackListService blackListService
+global EventService eventService
+
+// 黑名单预警
+rule "rc_blacklist"
+    no-loop false
+    lock-on-active true
+    when
+        $event : LoginEvent(level == 0);
+    then
+        if (blackListService.contain($event.getUsername())) {
+            // 保存风险事件
+            boolean flag = eventService.insertRiskEvent($event, "黑名单用户尝试登录");
+            if (flag) {
+                System.out.println("黑名单用户尝试登录");
+            }
+            delete($event);
+        }
+end

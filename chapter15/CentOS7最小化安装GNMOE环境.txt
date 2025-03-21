@@ -1,0 +1,21 @@
+yum install links -y
+# 停止防火墙
+systemctl stop firewalld.service
+# 禁用防火墙
+systemctl disable firewalld.service
+# 安装httpd组件
+yum install httpd -y
+systemctl enable httpd.service
+systemctl restart httpd.service
+# 安装epel-release组件
+yum install epel-release -y
+yum groupinstall "X Window system" -y
+yum install gnome-classic-session gnome-terminal nautilus-open-terminal control-center -y
+# 设置默认启动图形界面
+unlink /etc/systemd/system/default.target
+ln -sf /lib/systemd/system/graphical.target /etc/systemd/system/default.target
+reboot
+# 如果不想启动图形界面可用如下命令
+init 3
+# 或者
+systemctl set-default multi-user.target
