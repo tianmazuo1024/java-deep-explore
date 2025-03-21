@@ -19,13 +19,17 @@ Java诞生以来，二十多年长盛不衰，一直在TIOBE编程语言排行�
 |:---:|:---:|:---:|:---:|
 | byte | 8-bit | -128 ～ 127 | byte.class == Byte.TYPE |
 | short | 16-bit | -32768 ～ 32767 | short.class == Short.TYPE |
-| int | 32-bit | -2<sub>31</sub> ～ 2<sub>31</sub> - 1 | int.class == Integer.TYPE |
-| long | 64-bit | -2<sub>63</sub> ～ 2<sub>63</sub> - 1 | long.class == Long.TYPE |
+| int | 32-bit | -2^31 ～ 2^31 - 1 | int.class == Integer.TYPE |
+| long | 64-bit | -2^63 ～ 2^63 - 1 | long.class == Long.TYPE |
 | float | 32-bit | 1.4E-45 ～ 3.40E+38 | float.class == Float.TYPE |
 | double | 64-bit | 4.9E-324 ～ 1.8E+308 | double.class == Double.TYPE |
 | char | 16-bit | 0 ～ 65535 | boolean.class == Boolean.TYPE |
 | boolean | - | true / false | char.class == Character.TYPE |
 
-> 图2-1 《小灵通漫游未来》
+3. 如果算上八种基本数据类型、八种包装类型，String类型，那么Java就有十七种数据类型里，所以说十几种的也算对。
 
-![图1-1 《小灵通漫游未来》](chapter01/01-01.png)
+但笔者认为，Java的数据类型应该有五大类二十二种，如图2-1所示。
+
+> 图2-1 Java的数据类型
+
+![图2-1 Java的数据类型](chapter02/02-01.png)
