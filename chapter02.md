@@ -19,8 +19,8 @@ Java诞生以来，二十多年长盛不衰，一直在TIOBE编程语言排行�
 |:---:|:---:|:---:|:---:|
 | byte | 8-bit | -128 ～ 127 | byte.class == Byte.TYPE |
 | short | 16-bit | -32768 ～ 32767 | short.class == Short.TYPE |
-| int | 32-bit | -2^31 ～ 2^31 - 1 | int.class == Integer.TYPE |
-| long | 64-bit | -2^63 ～ 2^63 - 1 | long.class == Long.TYPE |
+| int | 32-bit | -2^31^ ～ 2^31^ - 1 | int.class == Integer.TYPE |
+| long | 64-bit | -2^63^ ～ 2^63^ - 1 | long.class == Long.TYPE |
 | float | 32-bit | 1.4E-45 ～ 3.40E+38 | float.class == Float.TYPE |
 | double | 64-bit | 4.9E-324 ～ 1.8E+308 | double.class == Double.TYPE |
 | char | 16-bit | 0 ～ 65535 | boolean.class == Boolean.TYPE |
