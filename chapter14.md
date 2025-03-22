@@ -394,28 +394,28 @@ Navicat可以支持概念数据模型、逻辑数据模型和物理数据模型�
 
 <table>
 	<tr>
-		<td colspan="2" bgcolor="black">数据表</td>
-    <td colspan="3" bgcolor="black">default.author信息表</td>
-    <td colspan="2" bgcolor="black">表引擎</td>
-    <td colspan="3" bgcolor="black">MyISAM</td>
+		<th colspan="2" bgcolor="black">数据表</td>
+    <th colspan="3" bgcolor="black">default.author信息表</td>
+    <th colspan="2" bgcolor="black">表引擎</td>
+    <th colspan="3" bgcolor="black">MyISAM</td>
 	</tr>
   <tr>
-		<td colspan="2" bgcolor="black">唯一索引</td>
-    <td colspan="3" bgcolor="black">无</td>
-    <td colspan="2" bgcolor="black">字符集</td>
-    <td colspan="3" bgcolor="black">utf8mb4 / utf8mb4_general_ci</td>
+		<th colspan="2" bgcolor="black">唯一索引</td>
+    <th colspan="3" bgcolor="black">无</td>
+    <th colspan="2" bgcolor="black">字符集</td>
+    <th colspan="3" bgcolor="black">utf8mb4 / utf8mb4_general_ci</td>
 	</tr>
 	<tr>
-		<td bgcolor="black">字段</td>
-		<td bgcolor="black">类型</td>
-    <td bgcolor="black">长度</td>
-    <td bgcolor="black">精度</td>
-    <td bgcolor="black">默认值</td>
-    <td bgcolor="black">非空</td>
-    <td bgcolor="black">外键</td>
-    <td bgcolor="black">主键</td>
-    <td bgcolor="black">字符集</td>
-    <td bgcolor="black">注释</td>
+		<th bgcolor="black">字段</td>
+		<th bgcolor="black">类型</td>
+    <th bgcolor="black">长度</td>
+    <th bgcolor="black">精度</td>
+    <th bgcolor="black">默认值</td>
+    <th bgcolor="black">非空</td>
+    <th bgcolor="black">外键</td>
+    <th bgcolor="black">主键</td>
+    <th bgcolor="black">字符集</td>
+    <th bgcolor="black">注释</td>
 	</tr>
   <tr>
 		<td>guid</td>
