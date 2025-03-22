@@ -462,14 +462,12 @@ OpenResty已经为开发者提供了众多成熟且开箱即用的模块，例�
 
 > 代码清单13-16 redis.lua部分源码
 
-```yml
+```lua
 local redis = require("resty.redis")
 local red = redis:new()
 red:set_timeout(1000)
 local ok, err = red:connect("127.0.0.1", 6379)
-
 ......
-
 if resp == ngx.null then
     resp = ''
 end
@@ -486,12 +484,15 @@ location /redis {
 }
 ```
 
-
-
+重启OpenResty，在浏览器中访问如下地址：“http://虚拟机IP地址/redis”，即可查询到对应数据。
 
 #### 13.4.2 操作MySQL数据库
 
+如同Redis那样，OpenResty也封装好了操作mysql的模块，“lua-resty-mysql”即是LUA为操作MySQL提供的客户端，默认安装OpenResty时已经自带了该模块，通过搜索“lua-resty-mysql”，也可以在github中找到它。
 
+和操作Redis一样，在`/usr/local/openresty/nginx/conf/lua`文件夹中创建一个名为mysql.lua的文件，并在其中加入代码清单13-17中所示内容。
+
+> 代码清单13-17 mysql.lua部分源码
 
 
 
