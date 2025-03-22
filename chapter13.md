@@ -554,9 +554,153 @@ resume()和yeild()这两个方法是LUA协程的核心，它们都是由coroutin
 
 ![图13-10 首次调用和非首次调用时resume()和yield()的参数关系](chapter13/13-10.png)
 
+为了验证coroutine.create()和coroutine.resume()方法，在/usr/local/openresty/nginx/conf文件夹中创建一个名为xiecheng.conf的文件，并在其中加入代码清单13-18所示内容。
 
+> 代码清单13-18 xiecheng.conf
+
+```yml
+server {
+    listen 80;
+    server_name _;
+    location /xiecheng {
+        default_type 'text/html';
+        content_by_lua '
+            co = coroutine.create(function (a, b)
+            ngx.print("resume args : "..a..", "..b.." - ")
+            yreturn = coroutine.yield()
+            ngx.print ("yreturn : "..yreturn.." - ")
+        end)
+        ngx.print(coroutine.resume(co, 1, 2), "<br/>")
+        ngx.print(coroutine.resume(co, 3, 4), "<br/>")
+        ngx.print(coroutine.resume(co, 5, 6))';
+     }
+}
+```
+
+随后修改`/usr/local/openresty/nginx/conf/nginx.conf`，找到“include lua.conf”这一行，并将其内容改为“include xiecheng.conf”。
+
+重启OpenResty，在浏览器中访问如下地址`http://虚拟机IP地址/xiecheng`，可以看到三次调用coroutine.resume()方法的结果都不同，而这正是resume()返回值的三种情况，如图13-11所示。
+
+> 图13-11 coroutine.resume()方法返回值的三种情况
+
+![图13-11 coroutine.resume()方法返回值的三种情况](chapter13/13-11.png)
+
+另一个比较重要的方法是coroutine.wrap(function)，wrap()返回的是一个函数，每次调用这个函数就相当于在调用coroutine.resume()。调用这个函数时传入的参数，就相当于在调用resume()时传入除协程句柄外的其他参数。但跟resume()不同的是，它并不是在保护模式下执行的，若执行崩溃会直接向外抛出异常。
+
+修改xiecheng.conf文件，在其中加入代码清单13-19所示内容。
+
+> 代码清单13-19 xiecheng.conf
+
+```yml
+location /xiecheng2 {
+    default_type 'text/html';
+    content_by_lua '
+        co = coroutine.wrap(function (a, b)
+            ngx.print("resume args : "..a..", "..b.." - ")
+            yreturn = coroutine.yield()
+            ngx.print ("yreturn : "..yreturn.." - ")
+        end)
+        ngx.print("co type is : "..ngx.print(type(co)), "<br/>")
+        ngx.print(ngx.print(co(1, 2)), "<br/>")
+        ngx.print(ngx.print(co(3, 4)))';
+}
+```
+
+完成修改后重启OpenResty，在浏览器中访问如下地址：“http://虚拟机IP地址/xiecheng2”，结果这说明warp()方法和调用coroutine.resume(co, a, b)的结果是等效的。
+
+coroutine库中其他与协程相关的方法包括有：
+
+1. isyieldable()：表示如果正在运行的协程可以挂起，则返回true（只有主协程（线程）和C函数是无法让出的）；
+2. running()：用来判断当前执行的协程是不是主线程，如果是就返回true；
+3. status(function)：返回表示协程状态的字符串：
+  - running：正在执行中的协程；
+  - suspended：还未结束却被挂起（调用了yeild或还没开始运行）的协程；
+  - normal：协程A resume协程B时，协程A所处的状态就是normal；
+  - dead：发生错误或正常终止的协程，如果这时候对它调用resume，将返回false和错误消息，就像刚才展示的那样。
+
+验证这些方法的代码笔者已经写在了xiecheng.conf文件的xiecheng3方法中，感兴趣的读者可自行验证，此处不再赘述。协程调用的时序图如图13-12所示。
+
+> 图13-12 协程调用时序图
+
+![图13-12 协程调用时序图](chapter13/13-12.png)
+
+从上图及代码，可以稍微总结一下关于OpenResty协程的知识点了：
+
+1. 所有的协程都是通过resume()和yield()这两个方法来完成协作的，这是协程的核心所在，可以说没有resume()和yield()，就没有协程；
+2. resume()和yield()都是由开发者控制的，除此之外，不会有任何其他外部干预，但线程就不一样；
+3. 函数从哪里挂起，恢复时就从哪里开始执行。关于这一点，可以尝试在r1中的coroutine.yield("b")前后各加上一行ngx.print()语句来验证。
 
 #### 13.5.2 关于并行调度
 
+无论有多少个方法，如果不加干预，在LUA中它们会始终以“串行”的方式来执行。为了验证这一特性，修改`/usr/local/openresty/nginx/conf/lua.conf`文件，在其中增加如代码清单13-20中所示的内容。
+
+> 代码清单13-20 lua.conf
+
+```yml
+location /test1 {
+	 default_type 'text/html';
+	 echo_sleep 2;
+	 echo test1 : $arg_test;
+}
+location /test2 {
+	 default_type 'text/html';
+	 echo_sleep 2;
+	 echo test2 : $arg_test;
+}
+```
+
+将之前修改过的`/usr/local/openresty/nginx/conf/nginx.conf`，再改回“include lua.conf”。在浏览器中访问：“http://虚拟机IP地址/test1?test=1”或者`http://虚拟机IP地址/test2?test=1`，结果显示test1或test2都是在经过2秒之后浏览器才给出响应。
+
+在lua.conf中再增加一个接口，让它顺序地访问/test1和/test2这两个接口，如代码清单13-21所示。
+
+> 代码清单13-21 lua.conf
+
+```yml
+location /allexecute {
+   default_type 'text/html';
+   content_by_lua '
+     local t1 = ngx.now()
+     local r1 = ngx.location.capture("/test1", {args = ngx.req.get_uri_args()})
+     local r2 = ngx.location.capture("/test2", {args = ngx.req.get_uri_args()})
+     local t2 = ngx.now()
+     ngx.print(r1.body, "<br/>", r2.body, "<br/>", tostring(t2 - t1))';
+}
+```
+
+重启OpenResty，在浏览器中访问如下地址`http://虚拟机IP地址/allexecute?test=1`，结果显示/test1和/test2确实是串行执行的。
+
+但这种串行方式，可以通过capture_multi改变，实现并行执行。在lua.conf中再增加一个接口，让它通过capture_multi并行地执行/test1和/test2接口，如代码清单13-22所示。
+
+> 代码清单13-22 lua.conf
+
+```yml
+location /concurrency {
+  default_type 'text/html';
+  content_by_lua '
+     local t1 = ngx.now()
+     local r1, r2 = ngx.location.capture_multi({
+          {"/test1", {args = ngx.req.get_uri_args()}},
+          {"/test2", {args = ngx.req.get_uri_args()}}
+        })
+     local t2 = ngx.now()
+     ngx.print(r1.body, "<br/>", r2.body, "<br/>", tostring(t2 - t1))';
+}
+```
+
+重启OpenResty，在浏览器中访问如下地址`http://虚拟机IP地址/concurrency?test=1`，可以看到结果如图13-13所示，这次/test1和/test2已经并行执行了。
+
+> 图13-13 concurrency接口执行后的结果
+
+![图13-13 concurrency接口执行后的结果](chapter13/13-13.png)
 
 ### 13.6 本章小节
+
+Nginx是一个高性能的开源Web服务器，也可以作为反向代理、负载均衡和流量管控的工具使用。但是在了解Nginx之前，需要对几个比较容易混淆的概念做一下澄清，那就是Web服务器、Web容器和Web代理。
+
+所谓的Web服务器，其实就是融合了传统的CGI公共网关接口和HTTP协议解析的一个Web服务，它接受客户端发出的请求，然后给出静态或动态的内容响应。而Web容器则在Web服务器的基础上加入了组件生命周期管理、语法标签解析、静态资源管理等诸多功能，它是基于某种特定编程语言环境的。如果在Web容器的基础上，再加入事务管理、数据库连接（池）、Bean注入等更多功能，则被称之为Web应用服务器。Web代理分为正向代理和反向代理，通过反向代理，客户端无需知道具体的服务地址，只需要使用所获的服务即可。
+
+Nginx最拿手的三样本领就是反向代理、负载均衡和流量管控。通过负载均衡，能够避将海量请求分摊到多台服务器上，既能避免单台服务器所造成的系统性能瓶颈，也能避免服务被流量冲垮。而通过不同的负载均衡策略，Nginx能够很好地平衡各种不同的服务器性能配置，让配置好的服务器多分担一些系统访问压力。同时，为了避免流量过大而造成系统崩溃，Nginx也通过漏桶算法对流量进行了限制，这特别适合于流量突发的情况，例如电商网站中的秒杀应用。除了限制流量，Nginx还能给流量“拉分支”。
+
+OpenResty是基于Nignx和LUA之上的一种组件生态，它充分利用并结合了LUA库、Nginx模块及众多第三方依赖，使得开发者可以随心所欲地对Nginx进行非常灵活地操控，将Nginx扩充为一个卓越的Web应用服务器。
+
+由于在LUA中引入了协程的概念，OpenResty也就自然获得了这一能力。OpenResty针对协程的操作，最重要的两个方法分别是Coroutine库的resume()和yield()方法。它们都是由开发者控制的，除此之外，不会有任何其他外部干预。而且协程函数从哪里挂起，恢复时就从哪里开始执行。
