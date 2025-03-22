@@ -484,7 +484,7 @@ location /redis {
 }
 ```
 
-重启OpenResty，在浏览器中访问如下地址：“http://虚拟机IP地址/redis”，即可查询到对应数据。
+重启OpenResty，在浏览器中访问如下地址`http://虚拟机IP地址/redis`，即可查询到对应数据。
 
 #### 13.4.2 操作MySQL数据库
 
@@ -494,21 +494,65 @@ location /redis {
 
 > 代码清单13-17 mysql.lua部分源码
 
+```yml
+local mysql = require("resty.mysql")
+local db, err = mysql:new()
+if not db then
+    ngx.say("new  mysql error:", err)
+    return
+end
+db:set_timeout(5000)
+local props = {
+    host = "127.0.0.1",
+    port = 3306,
+    database = "sys",
+    user = "root",
+    password = "123456"
+}
+......
+```
 
+接着修改`/usr/local/openresty/nginx/conf/lua.conf`配置文件，在其中增加如下部分内容：
 
+```yml
+location /mysql {
+    default_type 'text/html';
+    lua_code_cache on;
+    content_by_lua_file conf/lua/mysql.lua;
+}
+```
 
-
-
-
-
+可以看出，增加的这部分内容和Redis基本没区别。重启OpenResty后在浏览器中访问如下地址`http://虚拟机IP地址/mysql`，即可查询到对应数据。
 
 ### 13.5 OpenResty的协程
 
+在之前讲述Java协程时说过，进程一般是应用程序的启动实例，进程拥有代码、打开的文件、需处理的数据、独立的内存空间等资源，例如，独立部署的jar包、运行的redis、mongodb程序等，它们都是独立运行的进程，它相当于一个大管家。而线程从属于进程，是应用程序的实际执行者，它相当于是做具体工作的家丁或者仆役。一个进程至少包含一个主线程，或者包含多个子线程，线程拥有自己的栈空间。协程是一种比线程更加轻量级的存在，是“线程中的线程”，协程也拥有独立的堆栈，独立的局部变量，独立的指令指针，同时又与其它协程共享全局变量和其它内容，如图13-9所示。
 
+> 图13-9 协程
+
+![图13-9 协程](chapter13/13-09.png)
+
+和线程由CPU调度不同，协程不被操作系统管理，而是完全由线程内部控制，由程序显式的进行，需要多个程序彼此协作才能实现功能，这就是协程名字的由来。协程是通过特殊的函数来实现的——这个特殊的函数可以在某个地方“挂起”，之后可以重新在其他地方继续运行。一个线程之内可有多个这样特殊的函数，也就是可以有多个协程同时运行，但多个协程的运行只能是“串行”的——一个协程运行时，其他协程必须要挂起。同时还需要明确的一点是：协程也是有切换的，但它的切换不是像进程或线程那样由操作系统完成，而是由用户完成的。或者可以打一个这样的比方：协程类似于正在同步中的多线程，而在等待同一个线程锁的几个线程也类似于协程。协程是LUA中引入的概念，由于OpenResty是对LUA的封装，因此也自然就具备了协程特性。
 
 #### 13.5.1 Coroutine库
 
+resume()和yeild()这两个方法是LUA协程的核心，它们都是由coroutine提供的方法。
 
+1. coroutine.create(function)：表示传入一个函数作为参数来创建协程，返回coroutine，当遇到resume()时就唤醒函数调用；
+2. coroutine.resume(coroutine [v1, v2, ...])：它是协程的核心函数，用来启动或再次启动一个协程，使其由挂起状态变成运行状态，该函数相当于在执行协程中的方法，“v1, v2, ...”是执行协程时传递给它的参数：
+  - 首次执行协程coroutine时，参数v1...会传递给协程的函数；
+  - 再次执行协程coroutine时，参数v1...会作为协程yeild()的返回值；
+  - resume()返回值有三种情况：
+    - 如果协程的函数执行完毕，协程正常终止，就返回true和函数的返回值；
+    - 如果协程的函数在执行时，协程调用了yeild()方法，那么resume返回true和传入函数的第一个参数；
+    - 如果协程在执行过程中发生错误，那么resume返回false与错误消息。
+3. coroutine.yield()：使正在执行的函数挂起，传递给yeild的参数会作为resume的额外返回值。
+
+也就是说，首次调用时，resume()的参数会直接传递给协程函数；而非首次调用时，resume()的另一个参数会成为yield()的返回值，而yield()的参数，也会成为resume()额外的返回值。这么说有点绕，画张图就明白了，如图13-10所示。
+
+> 图13-10 首次调用和非首次调用时resume()和yield()的参数关系
+
+![图13-10 首次调用和非首次调用时resume()和yield()的参数关系](chapter13/13-10.png)
 
 
 
