@@ -394,38 +394,35 @@ Navicat可以支持概念数据模型、逻辑数据模型和物理数据模型�
 
 <table>
 	<tr>
-		<td colspan="2">数据表</td>
-    <td colspan="3">default.author信息表</td>
-    <td colspan="2">表引擎</td>
-    <td colspan="3">MyISAM</td>
+		<td colspan="2" bgcolor="black">数据表</td>
+    <td colspan="3" bgcolor="black">default.author信息表</td>
+    <td colspan="2" bgcolor="black">表引擎</td>
+    <td colspan="3" bgcolor="black">MyISAM</td>
 	</tr>
   <tr>
-		<td colspan="2">唯一索引</td>
-    <td colspan="3">无</td>
-    <td colspan="2">字符集</td>
-    <td colspan="3">utf8mb4 / utf8mb4_general_ci</td>
+		<td colspan="2" bgcolor="black">唯一索引</td>
+    <td colspan="3" bgcolor="black">无</td>
+    <td colspan="2" bgcolor="black">字符集</td>
+    <td colspan="3" bgcolor="black">utf8mb4 / utf8mb4_general_ci</td>
 	</tr>
 	<tr>
-		<td>字段</td>
-		<td>类型</td>
-    <td>长度</td>
-    <td>精度</td>
-    <td>默认值</td>
-    <td>非空</td>
-    <td>外键</td>
-    <td>主键</td>
-    <td>字符集</td>
-    <td>注释</td>
+		<td bgcolor="black">字段</td>
+		<td bgcolor="black">类型</td>
+    <td bgcolor="black">长度</td>
+    <td bgcolor="black">精度</td>
+    <td bgcolor="black">默认值</td>
+    <td bgcolor="black">非空</td>
+    <td bgcolor="black">外键</td>
+    <td bgcolor="black">主键</td>
+    <td bgcolor="black">字符集</td>
+    <td bgcolor="black">注释</td>
 	</tr>
 </table>
 
 
-| 数据表 | default.author信息表 | 表引擎 | MyISAM |
-| 唯一索引 | 无 | 字符集 | utf8mb4 / utf8mb4_general_ci |
-| 字段 | 类型 | 长度 | 精度 |
-|:---:|:---:|:---:|
-| 继承 | 只能单一继承 | 可有多个实现 |
-| 属性 | 和类一样有私有属性 | 可以有属性
+
+
+
 
 ### 14.3 架构图
 
