@@ -303,33 +303,188 @@ tail -f /home/work/logs/nginx/8080.log
 tail -f /home/work/logs/nginx/9090.log
 ```
 
-
-
-
+在浏览器中访问`http://nginx服务地址/test?username=test`，并观察服务器端口日志输出的变化。
 
 ### 13.3 OpenResty与LUA
 
+Nginx是业务直接和外部交流的接入点，而且对二次开发和动态变化有着一些定制化的需求，因此LUA这种嵌入式的脚本语言就应运而生了，它能揉和以及处理各种不同的Nginx上游输出（proxy、log等）。在Nginx和LUA结合的基础之上诞生了一个高性能的可扩展的Web平台：OpenResty。它在其内部集成了大量的LUA库、第三方模块以及依赖，它可以随心所欲地做出复杂的访问控制、业务处理和安全检测。基于OpenResty，工程师可以轻松构建出处理10000以上并发请求的超高性能Web应用，可以随意操控、分发、复制、限制、缓存响应头、Cookie及外部存储中的数据信息。总之，有了OpenResty的加持，Nginx不再是一个简单的HTTP服务器，而是摇身一变成为全功能的Web应用服务器了。
 
 #### 13.3.1 运行OpenResty
 
+在CentOS虚拟机中，OpenResty可通过yum的方式安装，过程非常简单，此处就不再演示。通过下面的脚本即可启动OpenResty，如脚本清单13-10所示。
 
+> 代码清单13-10 OpenResty启动脚本
 
+```bash
+/usr/local/nginx/sbin/nginx -s stop
+vi /etc/rc.local
+# 用“/usr/local/openresty/nginx/sbin/nginx”替换“/usr/local/nginx/sbin/nginx”
+/usr/local/openresty/nginx/sbin/nginx
+/usr/local/openresty/nginx/sbin/nginx -s reload
+/usr/local/openresty/nginx/sbin/nginx -s stop
+```
+
+启动OpenResty后在浏览器中访问地址：“http://CentOS虚拟机IP”，如出“Welcome to OpenResty！”字样则表示安装成功。
+
+在安装好OpenResty后，它使用的是自带的conf配置文件，如果希望之前Nginx中的各项功能都能继续正常运行，那么就需要将`/usr/local/nginx/conf/nginx.conf`中的内容复制到`/usr/local/openresty/nginx/conf/nginx.conf`中才行。复制之后，通过tail命令打开8080和9090的端口日志，并且再次在浏览器中访问地址`http://CentOS虚拟机IP/test?username=test`，发现之前的流量复制功能也能正常工作，这说明OpenResty已经完全替代了原生的Nginx。
 
 #### 13.3.2 第一个LUA脚本
 
+在/usr/local/openresty/nginx/conf目录下创建一个lua.conf文件，其内容如代码清单13-11所示。
 
+> 代码清单13-11 lua.conf
 
+```yml
+server {
+    listen 80;
+    server_name _;
+    location /lua {
+        default_type 'text/html';
+        content_by_lua 'ngx.say("Hello World from OpenResty")';
+    }
+}
+```
+
+然后编辑OpenResty的nginx.conf文件，在其中的“http”部分添加如下配置：
+
+```yml
+http {
+lua_package_path "/usr/local/openresty/lualib/?.lua;;";
+lua_package_cpath "/usr/local/openresty/lualib/?.so;;";
+    include    lua.conf
+```
+
+重启OpenResty，在浏览器中访问地址：“http://CentOS虚拟机IP/lua”，就能看到网页上看到打印出来的“Hello World from OpenResty”了。
+
+但是这么做会有一个问题，因为如果将lua代码都放在nginx中，那它会随着代码的变更导致越来越难以维护。因此，推荐的做法是把lua代码单独转移到外部文件中，就像如图13-6所示那样。
+
+> 图13-6 nginx.conf ⊂ lua.conf ⊂ code.lua
+
+![图13-6 nginx.conf ⊂ lua.conf ⊂ code.lua](chapter13/13-06.png)
+
+所以，本着这种思路，在/usr/local/openresty/nginx/conf目录下创建一个单独保存lua代码的目录，然后在lua目录中创建一个名为helloworld.lua的文件，其内容如代码清单13-12所示。
+
+> 代码清单13-12 helloworld.lua
+
+```bash
+ngx.say("Hello World from OpenResty")
+```
+
+再修改代码清单13-11中的内容，如代码清单13-13所示。
+
+> 代码清单13-13 lua.conf
+
+```yml
+server {
+    listen 80;
+    server_name _;
+    location /lua {
+        default_type 'text/html';
+        content_by_lua_file conf/lua/helloworld.lua;
+        lua_code_cache on;
+    }
+}
+```
+
+重启OpenResty，再次用浏览器访问地址`http://CentOS虚拟机IP/lua`，如果依然能看到网页上打印出来的`Hello World from OpenResty`，就说明内容修改后，OpenResty能够正常执行。
 
 #### 13.3.3 LUA API
 
+每个HTTP请求都需要由Web服务器接收、处理，然后再输出响应，每个请求包含请求参数、请求头、消息体等信息。服务器通过对请求的处理，输出客户端需要的内容，响应内容包含响应状态码、响应头和响应内容体，而这些内容都可以通过LUA API解析出来。
 
+首先修改之前的lua.conf文件内容，如代码清单13-14所示。
 
+> 代码清单13-14 lua.conf部分源码
+
+```yml
+server {
+    listen       80;
+    server_name  _;
+    location /request {
+        default_type 'text/html';
+        lua_code_cache on;
+        set $a $host;
+        content_by_lua_file conf/lua/request.lua;
+        echo_after_body "ngx.var.a = $a";
+    }
+    ......
+}
+```
+
+在/usr/local/openresty/nginx/conf/lua目录中创建一个名为request.lua的代码文件，其内容如代码清单13-15所示。
+
+> 代码清单13-15 request.lua部分源码
+
+```yml
+local var = ngx.var
+ngx.say("ngx.var.a : ", var.a)
+var.a = 2;
+local headers = ngx.req.get_headers()
+ngx.say("=== headers begin ===")
+ngx.say("Host : ", headers["Host"])
+ngx.say("user-agent : ", headers["user-agent"])
+ngx.say("user-agent : ", headers.user_agent)
+for k, v in pairs(headers) do
+  ngx.say(k, ": ", v)
+end
+......
+```
+
+重启OpenResty，在虚拟机中执行如下curl命令：
+
+```bash
+curl -XPOST 'http://127.0.0.1/request?a=1&b=2' -d 'c=3&d=4'
+```
+
+结果如图13-7所示。
+
+> 图13-7 lua api
+
+![图13-7 lua api](chapter13/13-07.png)
+
+然后在浏览器中访问如下地址`http://虚拟机IP地址/response`，就能看到LUA输出的响应。由于OpenResty集成了大量的LUA库和第三方库，因此如果需要开发更加复杂的应用，那么可以参考借鉴其他语言的开发模式，例如Java，将代码按项目进行分层分包管理。
 
 ### 13.4 用LUA操作数据
 
+OpenResty已经为开发者提供了众多成熟且开箱即用的模块，例如cjson、redis客户端、mysql客户端等。因为在高性能高并发的互联网应用中，Nginx往往会成为服务端多级缓存架构中最开始的那一层，如图13-8所示。
+
+> 图13-8 多级缓存架构
+
+![图13-8 多级缓存架构](chapter13/13-08.png)
+
+而且，在大型电商、团购等互联网平台中，OpenResty一般都会主动读取Redis等缓存中间件中保存的商品、订单、交易或其他热点数据，OpenResty或同步这些数据，或拦截上游的查询请求以缓解下游系统的压力。另外，读者可以cd到docker-data文件夹，然后通过执行docker-compose命令来启动MySQL和Redis服务，后续将会用到。
 
 #### 13.4.1 访问Redis缓存
 
+“lua-resty-redis”模块是LUA为操作redis提供的客户端，默认安装OpenResty时已经自带了该模块，也可以在github中搜索“lua-resty-redis”找到它。
+
+首先，在/usr/local/openresty/nginx/conf/lua文件夹中创建一个名为redis.lua的文件，并在其中加入代码清单13-16中所示内容。
+
+> 代码清单13-16 redis.lua部分源码
+
+```yml
+local redis = require("resty.redis")
+local red = redis:new()
+red:set_timeout(1000)
+local ok, err = red:connect("127.0.0.1", 6379)
+
+......
+
+if resp == ngx.null then
+    resp = ''
+end
+ngx.say("hello: ", resp)
+```
+
+再修改`/usr/local/openresty/nginx/conf/lua.conf`配置文件，在其中增加如下部分内容：
+
+```yml
+location /redis {
+    default_type 'text/html';
+    lua_code_cache on;
+    content_by_lua_file conf/lua/redis.lua;
+}
+```
 
 
 
