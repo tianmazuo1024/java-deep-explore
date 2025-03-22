@@ -80,16 +80,162 @@ server {
 }
 ```
 
+然后再编写一个简单的Java Web应用，用于测试验证配置Nginx之后的反向代理服务，如代码清单13-2所示。
+
+> 代码清单13-2 NginxReverseProxy.java
+
+```java
+@RestController
+public class NginxReverseProxy {
+    @GetMapping("/")
+    public String index() {
+        return "Hello Nginx";
+    }
+}
+```
+
+这个应用可以使用带端口的Tomcat地址访问（http://localhost:9529/），或者也可以使用默认80端口的Nginx地址（http://localhost/），均能访问成功。
+
 #### 13.2.2 负载均衡
 
+除了最基本的反向代理，Nginx还可以提供负载均衡服务，它可以将海量请求分摊到多个服务器上分别执行，从而减轻单台服务器的访问压力，这一能力也使得Nginx成为互联网应用的标准配置。而负载均衡一般都需要同时配置反向代理，通过反向代理来跳转到指定的服务器上。
 
+Nginx目前支持自带三种负载均衡策略，分别是默认的轮询访问策略、权重分配策略和iphash约束策略。它们的区别如下：
 
+1. 轮询访问策略：这是Nginx默认的负载均衡策略。在这种策略下，每个请求按顺序轮流地分配到不同的后端服务器，如果某些后端服务器宕机或离线，Nginx也能自动剔除它；
+2. 权重分配策略：在这种负载均衡策略下，每个请求按指定轮询几率访问后端服务，权重Weight和访问比率成正比，这种策略常用于后端服务器性能不均的情况，如有些服务器配置高，那么访问权重就可以相应高一些。而配置较低的服务器则访问权重也就相应低一点。它同样也能自动剔除宕机或离线的后端服务器；
+3. iphash约束策略：轮询和权重的方式只能满足无状态的或者幂等的业务应用，但有时业务需要满足某些客户从头到尾只能访问某个指定服务器的条件约束。因此，这种情况就需要采用iphash方式来分配后端服务器了。
 
+为了通过代码观察Nginx的负载均衡效果，读者可以准备好2～3台虚拟机，在每台虚拟机中安装好JDK环境，再编写一个最简单的SpringBoot应用。该SpringBoot应用只需让访问者知道Nginx将路由分配到了哪一台服务上即可，如代码清单13-3和代码清单13-4所示。
+
+> 代码清单13-3 NginxLoadBalance.java
+
+```java
+@RestController
+public class NginxLoadBalance {
+    @GetMapping("/test")
+    public String test(final String username) {
+        return "hello, " + username + " from server01";
+    }
+}
+```
+
+> 代码清单13-4 NginxLoadBalance.java
+
+```java
+@RestController
+public class NginxLoadBalance {
+    @GetMapping("/test")
+    public String test(final String username) {
+        return "hello, " + username + " from server02";
+    }
+}
+```
+
+这两段代码分别在两个SpringBoot项目中，它们唯一的区别就是server编号不同。
+
+将代码清单13-3和代码清单13-4的接口服务打包成jar文件后，分别部署到其中的两台虚拟机上。再利用其中一台服务器安装Nginx，作为负载均衡服务。
+
+或者读者也可以直接使用笔者在docker-server/server01和docker-server/server02这两个文件夹中提供的docker容器，这两个docker容器都已经准备好了JDK环境和相应的jar包。读者只需cd到各自目录下分别执行docker-compose命令即可。另外，如果不知道容器启动后的服务地址，可通过docker inspect [Container ID]命令查看。
+
+实现Nginx默认的轮询策略，只需要稍稍修改nginx.conf配置文件即可，如代码清单13-5所示。
+
+> 代码清单13-5 nginx.conf
+
+```yml
+upstream test {
+    server [ip]:8080
+    server [ip]:9090
+}
+server {
+    listen        80;
+    server_name  localhost;
+    location / {
+        proxy_pass http://test;
+        proxy_set_header Host $host:$server_port;
+    }
+}
+```
+
+重启Nginx，然后反复访问“http://nginx的服务地址/test?username=test”，结果显示：
+
+1. 第n次访问会返回“server01”；
+2. 第n+1次访问会返回“server02”。
+
+这说明轮询访问策略已经生效。
+
+权重分配策略只需要在配置中加入权重关键字weight即可，如代码清单13-6所示。
+
+> 代码清单13-6 nginx.conf
+
+```yml
+upstream test {
+    server [ip]:8080 weight=7
+    server [ip]:9090 weight=3
+}
+```
+
+重启Nginx后，在10次访问中，第一个服务会被访问7次，而第二个服务则会被访问3次。配置iphash策略则更为简单，只需在upstream中增加一个“ip_hash”关键字即可，如代码清单13-7所示。
+
+> 代码清单13-7 nginx.conf
+
+```yml
+upstream test {
+    ip_hash
+    server [ip]:8080
+    server [ip]:9090
+}
+```
+
+除了Nginx自带的三种负载均衡策略外，还有另外两种常用的第三方策略，分别是fair策略和一致性hash策略。它们可以在github上下载并安装。它们的作用是：
+
+1. fair策略是按后端服务器的响应时间来分配请求的，响应时间短的优先分配，有利于服务端的资源利用；
+2. 一致性hash策略可以根据参数的不同将请求均匀映射到后端服务器。
+
+它们的配置也和iphash策略类似，此处就不再赘述，感兴趣的读者可自行在github上查阅安装配置说明。
 
 #### 13.2.3 流量管控
 
+在互联网应用中，很多场景中都会涉及到海量的高并发请求，例如秒杀。而如果不对这些请求做限制，那么服务器将很快会被冲垮。就像在12306买票一样，如果全国人民都一窝蜂去抢票，那服务器是无论如何也扛不住这种瞬时压力的。这是每一个有着巨大流量的互联网应用都必须要面对并解决的问题。
 
+用于限制流量的算法通常有两类：令牌桶和漏桶。
 
+所谓令牌桶，其算法思想是：
+
+1. 令牌以固定速率产生，并缓存到令牌桶；
+2. 令牌桶放满时，多余的令牌将被直接丢弃；
+3. 请求进来时，先进入待处理的请求队列；
+4. 处理请求时需要从桶里拿到相应数量的令牌作为处理“凭证”；
+5. 当桶里没有令牌时，请求处理被拒绝。
+
+其过程如图13-4所示。
+
+> 图13-4 令牌桶的算法思想
+
+![图13-4 令牌桶的算法思想](chapter13/13-04.png)
+
+令牌桶是一种常用于网络流量整形和速率限制的算法。只有持有令牌的请求才会被处理，这也是令牌桶名称的由来。而由于令牌桶算法允许突发流量的存在，所以它更适合流量突发的应用场景，例如秒杀。
+
+相比于令牌桶，漏桶限流的核心算法思想是“缓存请求、匀速处理、多余丢弃”。正如其名，漏桶不管外部水量是否突然增加或减少，其底部始终保持着匀速的出水量，这正是漏桶算法名称的由来，如图13-5所示。
+
+> 图13-5 漏桶的算法思想
+
+![图13-5 漏桶的算法思想](chapter13/13-05.png)
+
+从上图中可以看到，水（也就是请求）从上方进入漏桶，从下方流出（被处理）。来不及流出的流量会被缓存在桶中，以固定速率流出，桶满后多余的水（流量）则会溢出（被丢弃）。因此，漏桶算法可以屏蔽流量的陡然变化，所以它更适合需要平滑流量的场景。
+
+Nginx限流模块使用的正是漏桶算法。它有两种实现限流的方式：
+
+1. 限制访问频率，就是限制指定时间内每个用户的访问次数；
+2. 限制并发连接数，就是限制某段时间内访问资源的用户数。
+
+为了测试Nginx的限流效果，可以安装apache的ab压测工具。在CentOS中执行以下命令即可。
+
+```bash
+yum -y install httpd-tools
+cd /usr/bin
+ab -V
+```
 
 
 ### 13.3 OpenResty与LUA
