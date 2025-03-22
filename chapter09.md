@@ -836,34 +836,215 @@ OTP与其他验证方式的比较如表9-8所示。
 | 生物识别 | 高 | 差 | 一般 | 差 | 高 |
 | 动态令牌OTP | 高 | 好 | 方便 | 好 | 低 |
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #### 9.3.2 实现OTP
 
+实现OTP非常简单，因为它现在已经是非常成熟的技术了。
 
+因为动态密码的生成和验证需要独立的程序来完成。所以首先需要在手机上安装一款独立的OTP应用APP，有两种方式可以实现。
+
+1. 下载原生APP。有下面几种方式：
+  - 下载FreeOTP：https://freeotp.github.io/，需要自己打包编译，不太方便；
+  - 可在Github中搜索开源的Google Authenticator for Android，下载后要自己编译安装，不太方便；
+  - 下载身份宝，这是一种商业OTP应用，但很久之前已经不再更新，不推荐。
+
+2. 使用小程序。可在微信或支付宝中搜索“二次验证码”，无需安装APP，非常方便。
+
+准备好了应用工具，就可以开始实现了。步骤如下：
+
+1. 开发自己的工具类。网络中的资料也基本都是参考开源的Google Authenticator for Android实现的，参照此工具类编写的代码，都在cn.javabook.chapter09.otp包中；
+2. 调用OTPAuthUtil.generateSecret()方法生成密钥，并将密钥保存下来便于后续测试，如下列代码段所示。
+
+```java
+String secret = "WJ5E332WQQQ6HHUPM2JELL2ZCFNK56MQLIYD7RY......";
+```
+
+3. 调用OTPAuthUtil.generateTotpURI()方法生成OTPAUTH协议字符串，如下列代码段所示。
+
+```java
+String account = "javabook";
+String protocaluri = OTPAuthUtil.generateTotpURI(account, secret);
+```
+
+4. 打开免费的二维码生成网站，将生成的OTPAUTH协议链接字符串变成二维码，或者自己通过代码将链接字符串生成二维码；
+5. 打开刚才安装的FreeOTP/身份宝/微信小程序/支付宝小程序等独立OTP应用，扫描该二维码；
+6. 如果验证成功，就可以看到动态令牌出现在了APP上，并且会有圆圈显示倒计时失效的进度提示，扫码结果如图9-31所示。
+
+> 图9-31 用小程序扫描二维码后的结果
+
+![图9-31 用小程序扫描二维码后的结果](chapter09/09-31.png)
+
+7. 在验证码有效期内调用OTPAuthUtil.verify()方法，验证生成的动态码是否正确，如下列代码段所示。
+
+```java
+String code = "[这里输入APP或小程序生成的动态验证码]";
+System.out.println("动态验证码是否正确：" + OTPAuthUtil.verify(secret, code));
+```
 
 #### 9.3.3 集成到第三方授权
 
+OTP如果只是这么简单玩一玩，既没啥意思也没啥作用。还记得在上一节中笔者实现过的自定义第三方授权平台吗？如果将OAuth 2.0中的token用动态令牌来替换一下，会是什么效果？抱着好玩试试看的态度，说动手就动手。
 
+首先将eclipse的third项目拷贝一份，然后在新拷贝的eclipse的third（token）项目中添加maven依赖，如下面代码段所示：
+
+```java
+<dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>30.0-jre</version>
+</dependency>
+<dependency>
+        <groupId>commons-codec</groupId>
+        <artifactId>commons-codec</artifactId>
+</dependency>
+```
+
+再将cn.javabook.chapter09.otp包中的Base32Util、HexEncoding、OTPAuthUtil这三个文件拷贝到Third项目中。
+
+再修改third（token）项目的login接口，如代码清单9-9所示。
+
+> 代码清单9-9 IndexController的login()接口
+
+```java
+@GetMapping("/login")
+public String login(String identifier, String credential) {
+    UserVO userVO = userService.login(identifier, credential);
+    if (null == userVO) {
+        return "userfailure";
+}
+    // 为了简便直接赋值了，不影响展示效果
+    String appid = "8e5f7cc5cb85427cbcd0c632548afaf4";
+    String secret = "WJ5E332WQQQ6HHUPM2JELL2ZCFNK56MQLIYD7RY4K5NNTHO6TURA";
+    applyService.saveCode(appid, userVO.getUserid(), secret);
+    return "qrcode";
+}
+```
+
+要记得将apply_auth表的code和token字段长度调整成64位，否则待会保存时会报错。同时删除之前测试时遗留的数据库记录。
+
+接着将之前的二维码图片保存下来放到项目的/static/images目录中，如图9-32所示。
+
+> 图9-32 保存生成的二维码图片
+
+![图9-32 保存生成的二维码图片](chapter09/09-32.png)
+
+增加qrcode.ftl页面文件，文件内容如代码清单9-10所示。
+
+> 代码清单9-10 qrcode.ftl页面文件
+
+```java
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>扫码添加账户</title>
+</head>
+<body>
+<img src="/static/images/qrcode.png" />
+</body>
+</html>
+```
+
+实际上，这里应该是由代码来生成二维码页面的，但作为演示，直接展示已经生成好的，并不影响效果。接下来再修改third（token）项目的token接口，如代码清单9-11所示。
+
+> 代码清单9-11 IndexController的token()接口
+
+```java
+@PostMapping("/token")
+@ResponseBody
+public String token(String appid, String appsecret, String code) {
+   ApplyAuth applyAuth = applyService.queryCode(appid);
+   boolean flag = OTPAuthUtil.verify(applyAuth.getCode(), code);
+   if(flag) {
+      return "OK";
+   } else {
+      return "Failure";
+   }
+}
+```
+
+这样，third（token）项目就已经全部修改完毕。现在轮到idea的oauth2项目做出修改了。先将oauth2中的回调接口临时注释掉，并给oauth2增加token接口，如代码清单9-12所示。
+
+> 代码清单9-12 给AuthRedirectController增加token()接口
+
+```java
+@GetMapping("oauth2/token")
+public void token(final String token) throws ParseException {
+    Map<String, String> map = new HashMap<>();
+    map.put("appid", "8e5f7cc5cb85427cbcd0c632548afaf4");
+    map.put("appsecret", "javabook");
+    map.put("code", token);
+    String result = sendPost("http://localhost:9528/token", map);
+    System.out.println("验证结果：" + result);
+}
+```
+
+同时增加token.ftl页面文件，如代码清单9-13所示。
+
+> 代码清单9-13 token.ftl页面文件
+
+```java
+<!DOCTYPE html>
+<html lang="zh_CN">
+<head>
+    <meta charset="utf-8" />
+    <title>token验证</title>
+</head>
+<body>
+<form action="/oauth2/token">
+    <table>
+        <tr>
+            <td>动态令牌</td>
+            <td><input type="text" name="token" autofocus placeholder="输入令牌"></td>
+            <td><button type="submit">验证</button></td>
+        </tr>
+    </table>
+</form>
+</body>
+</html>
+```
+
+最后增加访问token.ftl的路径并修改原注册路径，如代码清单9-14所示。
+
+> 代码清单9-14 Auth2Controller.java部分源码
+
+```java
+@GetMapping("/oauth2")
+public String token() {
+    return "oauth2/token";
+}
+```
+
+全部修改完成之后，后续验证步骤就比较简单了：
+
+1. 分别启动third（token）和oauth2；
+2. 访问http://localhost:9527/signin；
+3. 点击“使用第三方平台Third登录”链接；
+4. 在新页面中输入用户名test和密码123456，然后点击“授权”；
+5. 出现二维码页面，打开安装的FreeOTP/身份宝/微信小程序/支付宝小程序等独立OTP应用，扫描该二维码，在手机中出现图9-47所示结果；
+6. 在浏览器的新标签页中打开http://localhost:9527/oauth2；
+7. 在输入框中输入手机中生成的验证码后点击“验证”；
+8. 如果验证成功，则在idea的控制台中显示“验证结果：OK”，否则失败。
+
+整个流程如图9-33所示。
+
+> 图9-33 集成动态令牌的第三方平台授权流程
+
+![图9-33 集成动态令牌的第三方平台授权流程](chapter09/09-33.png)
+
+将二次验证码集成到第三方授权平台的工作，做到这一步就已经算是完成了，但并不完美。至于怎么能够做的更出彩，就要看各位读者们的想象力了。
 
 ### 9.4 本章小节
 
+笔者首先把认证与授权中比较核心的部分RBCAC做了讲解，从RBAC0开始，一直到RBAC3，它们的演变过程及相对应的逻辑模型和物理模型。因为权限系统从设计到实现，最终需要落实到数据和代码上。笔者在这里结合自身开发经验讲解了两种权限系统的实现方式。一是参照Spring Security框架的拦截过滤器和自定义注。二是通过将RowSet行集转换为树型数据结构的递归算法，实现权限的分配。这两种方法的实操性都很强，而且各有千秋。
 
+在互联网日益成熟的前提下，记住几十上百个网站的用户名和密码，对用户来说是一种折磨，OAuth应运而生。OAuth的全称是“Open Authorization”，它是一个关于授权的网络协议标准，它关注的是授权而非认证。由于OAuth 1.0已经被废弃，所以现在2.0版本就是事实上的标准。OAuth 2.0有四种实现模式，分别是授权码模式、隐藏模式、密码模式和客户端凭证模式，它们可适应并满足不同的授权需求。笔者尝试将微信授权码模式替换为Github授权码模式，并通过代码实现了它。然后也给读者演示了如何留存第三方的用户数据，如何把自己变成第三方。
 
+本章最后讲解了一种双因子身份认证机制：动态令牌。它结合了密码和令牌这两种认证方式的优点，因此目前得到了非常广泛的应用范围。在通过伪代码了解OTP的TOTP和HOTP机制后，笔者借助开源项目google-authenticator做了一个TOTP的示例程序。然后又将它与之前的第三方授权平台项目进行了集成。
 
 ### 9.5 本章练习
+
+1. 请将“留存用户”小节中的token数据改为用redis或caffine缓存中间件保存，并将client_id和client_secret在user_auth中保存下来。
+
+2. 在成为第三方的过程中，oauth2和third仅实现了核心交互功能。还有很多不足。例如client_id和client_secret不是在页面上申请的，用户只有在登录之后才能授权等。请逐渐完善这些不足之处，让它成为您所在公司自己的第三方授权平台。
+
+3. 将OTP集成到第三方授权平台时，如果动态令牌已经失效，验证还能成功吗？本章将动态令牌集成到第三方授权平台的过程中，还有哪些不足之处？该如何改进？
