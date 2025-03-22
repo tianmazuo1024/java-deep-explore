@@ -237,6 +237,75 @@ cd /usr/bin
 ab -V
 ```
 
+ab的使用也很简单，例如：“./ab -n1000 -c100 -t1 -s5 http://localhost/test?username=test”。这条命令表示：执行1000次，每次有100个并发请求到指定服务，并在1秒之内完成请求，超时时间5秒。
+
+压测工具准备好之后，再来修改Nginx的配置，如代码清单13-8所示。
+
+> 代码清单13-8 nginx.conf
+
+```yml
+limit_req_zone $binary_remote_addr zone=case1:10m rate=10r/s;
+server {
+    listen       80;
+    server_name  localhost;
+    location / {
+        limit_req_zone=case1;
+    }
+}
+```
+
+执行下面的两条命令：
+
+```bash
+./ab -n1000 -c10 -t1 -s5 http://localhost/test?username=test
+./ab -n1000 -c10 -t2 -s5 http://localhost/test?username=test
+```
+
+ab压测输出的结果显示：“Complete requests：30397；Failed requests：30387”。
+
+从结果来看，请求了30397次，但失败了30387次，仅10次并发请求成功。这完全符合Nginx设置的要求。
+
+既然Nginx可以限制流量，那是不是也可以拓展流量呢？答案是肯定的，这就是其流量拷贝功能。其实对于流量拷贝的需求场景还是比较多的，例如，为了确保开发出来的应用能够立即应用到生产环境，就需要将生产环境的数据和流量拷贝到开发环境，这样做的好处显而易见：
+
+1. 可以验证功能是否正常，以及服务的性能；
+2. 用真实有效的流量请求去验证，又不用造数据，不影响线上正常访问；
+3. 可以用来排查线上问题，同时，这也是一种测试方式。
+
+这可以理解为给流量“拉分支”。修改Nginx配置，如代码清单13-9所示。
+
+> 代码清单13-9 nginx.conf部分源码
+
+```yml
+server {
+    listen 8080;
+    access_log /home/work/logs/nginx/8080.log;
+}
+server {
+    listen 9090;
+    access_log /home/work/logs/nginx/9090.log;
+}
+server {
+    listen        80;
+    server_name  localhost;
+    location / {
+        mirror /mirror1;
+        mirror /mirror2;
+        proxy_pass http://test;
+    }
+    ......
+}
+```
+
+停止并重新启动Nginx服务后，可以打开两个终端窗口，然后分别执行下面不同的tail命令并查看端口日志输出：
+
+```bash
+tail -f /home/work/logs/nginx/8080.log
+tail -f /home/work/logs/nginx/9090.log
+```
+
+
+
+
 
 ### 13.3 OpenResty与LUA
 
