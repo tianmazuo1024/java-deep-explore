@@ -394,32 +394,28 @@ Navicat可以支持概念数据模型、逻辑数据模型和物理数据模型�
 
 <table>
 	<tr>
-		<td colspan="2">跨两个单元格</td>
-    <td colspan="2">跨两个单元格</td>
-    <td colspan="2">跨两个单元格</td>
+		<td colspan="2">数据表</td>
+    <td colspan="3">default.author信息表</td>
+    <td colspan="2">表引擎</td>
+    <td colspan="3">MyISAM</td>
 	</tr>
   <tr>
-		<td colspan="2">跨两个单元格</td>
-    <td colspan="2">跨两个单元格</td>
-    <td colspan="2">跨两个单元格</td>
-	</tr>
-  <tr>
-		<td colspan="2">跨两个单元格</td>
-    <td colspan="2">跨两个单元格</td>
-    <td colspan="2">跨两个单元格</td>
-	</tr>
-  <tr>
-		<td colspan="2">跨两个单元格</td>
-    <td colspan="2">跨两个单元格</td>
-    <td colspan="2">跨两个单元格</td>
+		<td colspan="2">唯一索引</td>
+    <td colspan="3">无</td>
+    <td colspan="2">字符集</td>
+    <td colspan="3">utf8mb4 / utf8mb4_general_ci</td>
 	</tr>
 	<tr>
-		<td>第一格</td>
-		<td>第二格</td>
-    <td>第二格</td>
-    <td>第二格</td>
-    <td>第二格</td>
-    <td>第二格</td>
+		<td>字段</td>
+		<td>类型</td>
+    <td>长度</td>
+    <td>精度</td>
+    <td>默认值</td>
+    <td>非空</td>
+    <td>外键</td>
+    <td>主键</td>
+    <td>字符集</td>
+    <td>注释</td>
 	</tr>
 </table>
 
