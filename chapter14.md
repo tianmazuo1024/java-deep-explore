@@ -392,13 +392,19 @@ Navicat可以支持概念数据模型、逻辑数据模型和物理数据模型�
 
 > 表14-2 数据字典示例
 
-<table border="2" >
-	<tr >
+<table>
+	<tr>
 		<td colspan="2">跨两个单元格</td>
+    <td colspan="2">跨两个单元格</td>
+    <td colspan="2">跨两个单元格</td>
 	</tr>
-	<tr >
+	<tr>
 		<td>第一格</td>
 		<td>第二格</td>
+    <td>第二格</td>
+    <td>第二格</td>
+    <td>第二格</td>
+    <td>第二格</td>
 	</tr>
 </table>
 
