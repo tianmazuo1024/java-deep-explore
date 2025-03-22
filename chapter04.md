@@ -601,112 +601,462 @@ Mixed GC也类似于老年代的CMS GC过程，当全部Old Region ≥ JVM堆内
 | 垃圾回收类型 | 1. Young GC<br>2. Mixed GC<br>3. Full GC | 1. Young-Only<br>2. Space-Reclamation<br>3. Full GC |
 | 具体执行阶段 | 1. Initial marking phase<br>2. Root region scanning phase<br>3. Concurrent marking phase<br>4. Remark phase<br>5. Cleanup phase | 1. Concurrent Start<br>2. Remark<br>3. Cleanup |
 
-
-
-
-
-
-
-
-
-
-
-
 #### 4.4.4 实践案例
 
+虽然电商对系统有“三高”（高并发、高性能、高可用）的要求，但也有一些不那么引人注意的行业，其“三高”的标准一点也不比电商低。例如前几年特别活跃的某K12行业教育公司，拥有千万级注册用户，DAU用户约为300万，但选课、排课、课程详情等页面的浏览频率都较低，反而上课页面和APP界面使用频次最高。尤其是99%的流量都集中在每天18:00～21:00的上课时间段，因为期间会有大量的游戏互动、作业点评、课后问答等环节，即大量的点击事件、请求发送和结果返回数据。
 
+假设DAU的300万用户都集中在18:00～21:00的这3小时内，那么粗略估计：
 
+1. 平均每小时系统就要承载100万用户的访问量；
+2. 每1分钟互动（包括点击、提问、发送和回复消息等）1次，那么1小时1个用户互动60次；
+3. 1小时所有用户就有6000万次互动，平均每1秒16667次互动，按17000计算；
+4. 需要34台4C8G机器，平均每1台每1秒扛500次互动请求；
+5. 1次请求大概创建10KB对象，500次就是大约5MB数据。
 
+按照上述业务背景，采取类似支付系统案例的分析步骤，可以知道JVM分配物理内存的一半，也就是4GB内存，使用G1垃圾收集器，栈内存1MB，元空间256MB，年轻代Region默认占用5%JVM空间，最大60%。就此得到JVM的GC参数为：
 
+1. -Xms4096M -Xmx4096M -Xss1M
+2. -XX:MetaspaceSize=256M -XX:MaxMetaspaceSize=256M
+3. -XX:+UseG1GC
 
+从上面的设置还可以知道：
 
+1. 单个Region大小 = 4096MB / 2048 = 2MB；
+2. 年轻代Region的5% = 2048 × 0.05 ≈ 100 × 2MB ≈ 200MB；
+3. 年轻代Region的60% = 2048 × 0.6 ≈ 1228 × 2MB ≈ 2456MB；
+4. 200BM / 5MB/秒 = 40秒，2456MB / 5MB/秒 = 491秒。
 
+假设G1回收200个Region（≈400MB）需要200毫秒，那么年轻代Region初始占用的5%内存空间，不到1分钟（5MB × 60秒 = 300MB）就会被请求填满。因此就会出现：每不到1分钟Minor GC就被触发1次，虽然只有200毫秒左右的短暂停顿。
 
+所以，与其让GC在200MB的年轻代空间里被频繁触发，不如在更大的空间里，例如400个Region，以减少GC触发的频率。如果此时400个Region都被占满，GC回收一次大概200毫秒，那么这个性价比显然比回收100个Region高出4倍。如图4-40所示。
 
+> 图4-40 调整年轻代Region大小
 
+![图4-40 调整年轻代Region大小](chapter04/04-40.png)
 
+上述配置只是依据G1的运行原理和业务估算来配置的初始JVM参数。至于G1分配多少Region给年轻代、G1多久触发一次GC、G1每次GC耗费多长时间等问题，还需要通过工具在压测环境中观察、分析和不断调整得到。
 
+另外，Old Region的空间在JVM占比 ≥ 45%就会触发，所以也应该尽最大可能避免对象进入（或过快地进入）Old Region。
 
-
-
+限于篇幅，本章不可能将包括最新的ZGC所有的垃圾回收器全部讲完。但在涉及到GC的原理思路、方法剖析和案例展示等方面，笔者认为已经讲述得足够完整了。至少在理解这些机制和案例分析的方法、步骤之后，读者就已经完全可以尝试着拿过往项目练手了。
 
 ### 4.5 GC日志
 
+工程师可以通过了解GC运行机制和配置简单的JVM参数来设定Java应用的初始性能，但这种性能的深层次优化需要在了解GC运行状况的前提下才能进行。而了解GC运行状况除了观察系统运行表现之外，日志就是最重要，也几乎是唯一的手段了。这一节的目标就是给读者展示如何查看GC日志，以及如何在掌握日志所透露出的信息的前提下，通过实验手段优化JVM性能。只有掌握到这些分析方法和步骤，才能在不断更新迭代的JVM GC技术中得心应手。
 
+特别声明，为了尽可能让GC的输出纯粹且不受影响，下面所有的代码都以Java命令行的方式执行，本节内容也都是基于如下JVM基础参数（以下简称“JVM基础参数”）所生成的日志做的分析：
 
+1. -Xms20M -Xmx20M -Xmn10M
+2. -XX:SurvivorRatio=8 -XX:PretenureSizeThreshold=10M
+3. -XX:+UseParNewGC -XX:+UseConcMarkSweepGC
 
+同时增加GC日志参数：-XX:+PrintGCDetails -XX:+PrintGCDateStamps -Xloggc:[日志目录]/gc.log。实验代码的运行环境为：
 
+1. Windows 10专业版 22H2-19045.2364（虚拟机）
+2. Oracle JDK1.8.0_391
+3. Windows PowerShell
 
+#### 4.5.1 年轻代GC日志
 
+实验代码如代码清单4-1所示。
 
+> 代码清单4-1 ExperimentObjectA.java
 
+```java
+public class ExperimentObjectA {
+    public static void main(String[] args) {
+        byte[] array1 = new byte[2 * 1024 * 1024];
+        array1 = new byte[2 * 1024 * 1024];
+        array1 = new byte[2 * 1024 * 1024];
+        array1 = null;
+        byte[] array2 = new byte[4 * 1024 * 1024];
+    }
+}
+```
 
+以命令行的方式，加入JVM基础参数后执行，具体命令可参考源码注释内容。上面这段代码就是在故意制造垃圾，当array1变量执行完后，年轻代已满是垃圾，如图4-41所示。
 
+> 图4-41 array1变量执行完后JVM的状况
 
+![图4-41 array1变量执行完后JVM的状况](chapter04/04-41.png)
 
+紧接着继续给array2变量分配4M的数组引用对象，在已有3 × 2M垃圾对象情况下，这会让Eden区空间不足，直接触发Young GC，也就是Minor GC。在JVM GC参数配置中找到GC日志文件所在的目录，日志内容如图4-42所示。
 
+> 图4-42 GC日志文件内容
 
+![图4-42 GC日志文件内容](chapter04/04-42.png)
 
+从图中可以看到整个日志文件用红色方框标记出了三个部分：
 
+最上面的部分显示的是JVM、Java运行环境、内存分配的一些信息，以及JVM参数回显。例如将输入的JVM参数-Xms20M和-Xmx20M分别改成了-XX:InitialHeapSize=20971520和-XX:MaxHeapSize=20971520这种更为“本地化”的显示方式。
 
+中间部分正是想要得到的GC日志输出。内容并不多，可以分为如下几段逐一解释：
 
+1. [GC (Allocation Failure) 2023-11-10T21:17:19.711+0800: 0.114: 这一段的意思是说在系统运行0.114秒之后由于空间分配失败（Allocation Failure）而发生了一次GC。GC前的JVM内存状态如图4-43所示；
 
+> 图4-43 GC前JVM内存状况
 
+![图4-43 GC前JVM内存状况](chapter04/04-43.png)
 
+2. [ParNew: 7299K->635K(9216K), 0.0025319 secs] ：这一段说明此次GC使用的是ParNew垃圾回收器，很显然是一次年轻代Minor GC。GC前使用了7299KB，GC后还有635KB对象存活，GC后年轻代可用空间9216KB，耗时0.0025319秒；
+3. 7299K->635K(19456K), 0.0030111 secs] ：该段说明整个JVM堆内存目前可用空间是19456KB，GC前整个JVM堆使用了7299KB，GC后还存活了635KB；
+4. [Times: user=0.00 sys=0.00, real=0.00 secs] ：最后这一段说的是GC用户态耗时、内核耗时和总耗时，单位为毫秒。除非大得离谱，否则这几个数据都不用看。
 
+最下面的部分是给array2分配内存空间后JVM堆中内存的使用状况。可以非常清楚地看到年轻代已使用4974KB，这正是分配给array2的4MB空间和被其他对象占据的空间。其中Eden占8MB空间，使用了52%；Survivor区的S0占1MB空间，未知对象使用了62%；而S1和老年代均未被任何变量或类使用。这种状况如图4-44所示。
 
+> 图4-44 给array2分配内存空间后JVM堆中内存的使用状况
 
+![图4-44 给array2分配内存空间后JVM堆中内存的使用状况](chapter04/04-44.png)
+
+#### 4.5.2 “未满15禁止入内”
+
+年轻代的GC过程相对来说比较简单明了，容易分析。接下来就验证一下存活对象从年轻代进入老年代的时候，动态年龄判定的规则是否真如前文所说的那样在起作用。
+
+首先，在前述“JVM基础参数”中增加一个参数：-XX:MaxTenuringThreshold=15。意思是当年轻代“长大”到15岁之后，就可以进入老年群体了，否则还是在一边凉快去。此为“JVM对象年龄参数”，实验如代码清单4-2所示。
+
+> 代码清单4-2 ExperimentObjectB.java
+
+```java
+public class ExperimentObjectB {
+    public static void main(String[] args) {
+        byte[] array1 = new byte[2 * 1024 * 1024];
+        array1 = new byte[2 * 1024 * 1024];
+        array1 = new byte[2 * 1024 * 1024];
+        array1 = null;
+        byte[] array2 = new byte[128 * 1024];
+        byte[] array3 = new byte[2 * 1024 * 1024]; // 第一次给array3分配空间
+        array3 = new byte[2 * 1024 * 1024];
+        array3 = new byte[2 * 1024 * 1024];
+        array3 = new byte[128 * 1024];
+        array3 = null;
+        byte[] array4 = new byte[2 * 1024 * 1024]; // 给array4分配空间
+    }
+}
+```
+
+当上述代码执行到第一次给array3分配空间时，会触发和前一小节一样的GC。其分析过程就不再重复。此时的GC状况和GC后JVM堆内存的使用状况一定是如图4-45和图4-46所示那样。数据可能不完全相同，但一定近似。感兴趣的读者可以进行验证。
+
+> 图4-45 array3第一次分配空间并执行GC后的S0和Eden
+
+![图4-45 array3第一次分配空间并执行GC后的S0和Eden](chapter04/04-45.png)
+
+> 图4-46 第一次给array3分配空间并执行GC后的S0和Eden
+
+![图4-46 第一次给array3分配空间并执行GC后的S0和Eden](chapter04/04-46.png)
+
+从图4-45可知，此时S0已使用其80%的空间 = 1024KB × 80% = 819KB，存活对象大小 ≥ Survivor空间大小 × 50%，存活对象的年龄 = 1。
+
+当给array4分配内存空间时，触发了两次Minor GC。其日志内容如图4-47所示。
+
+> 图4-47 给array4分配完内存空间后触发两次Minor GC
+
+![图4-47 给array4分配完内存空间后触发两次Minor GC](chapter04/04-47.png)
+
+1. 第一次GC：ParNew: 7299K->764K(9216K), 0.0040484 secs：在给array3第一次分配内存空间并执行GC之后，年轻代Survivor区保存的是array2及其他存活对象，共819KB，当给array4分配内存空间时，Eden区已有6MB + 128KB的数据，无法再存储2M数组对象，因此触发本次GC。GC后Survivor区存活对象从819KB减少到764KB，但array2引用的128KB数组对象在Survivor区仍然是存在的，且此时的Eden区空间保存的是给array4分配的2MB数组对象；
+2. 第二次GC：ParNew: 7068K->0K(9216K), 0.0037374 secs：因为此时S0存活对象大小764KB ≥ Survivor × 50%，故而触发动态年龄判定规则（即如果当前Survivor区中，年龄相同的一批对象总大小 ≥ Survivor × 50%，那么这批对象及比它们年龄更大的对象，就都直接进入老年代）。结果就是Survivor区满足条件的存活对象都被转移到老年代，GC日志的最终内容也验证了这个结果，如图4-48所示；
+
+> 图4-48 第二次Minor GC执行后
+
+![图4-48 第二次Minor GC执行后](chapter04/04-48.png)
+
+从上图可以清楚地看到GC后JVM堆内存的使用状况，Eden区保存的是array4的2MB数组引用对象，而Survivor区已经从之前的764KB变为0，因为它里面的存活对象都转移到了老年代，使得老年代被占用了757KB。
+
+#### 4.5.3 长大意味着离开
+
+为了验证对象年龄规则，也就是存活对象默认15岁之后，被转移到老年代的规则，可运行代码清单4-3。
+
+> 代码清单4-3 ExperimentObjectC.java
+
+```java
+public static void main(String[] args) {
+    byte[] array1 = new byte[128 * 1024];
+    for (int i = 0; i < 20; i++) {
+        byte[] array2 = new byte[4 * 1024 * 1024];
+        array2 = new byte[4 * 1024 * 1024];
+        array2 = new byte[3 * 1024 * 1024];
+        array2 = null;
+    }
+}
+```
+
+在前述“JVM对象年龄参数”的基础上，将其中的“-Xms20M -Xmx20M -Xmn10M -XX:SurvivorRatio=8”改为“-Xms100M -Xmx100M -Xmn20M -XX:SurvivorRatio=6”。运行后，GC日志精简如图4-49和图4-50所示。
+
+> 图4-49 触发对象年龄规则后的年轻代GC
+
+![图4-49 触发对象年龄规则后的年轻代GC](chapter04/04-49.png)
+
+> 图4-50 对象年龄规则并完成GC后的JVM堆内存状态
+
+![图4-50 对象年龄规则并完成GC后的JVM堆内存状态](chapter04/04-50.png)
+
+从图4-49和图4-50可知，在第15次Minor GC时，年轻代还有存活对象，但从第16次开始时，年轻代中已没有任何存活对象。因为此时的存活对象已达到年龄上限，被全部转移到了老年代，大小固定为757K。读者可自行完成其分析过程，笔者不再重复进行。
+
+#### 4.5.4 直接去“养老”
+
+如果新创建的对象超过预设的阈值大小，是否会如规则所说那样直接进入老年代呢？下面来验证一下。此处在前述“JVM基础参数”中将“-XX:PretenureSizeThreshold=10M”改为“-XX:PretenureSizeThreshold=1M”。代码清单如4-4所示。
+
+> 代码清单4-4 ExperimentObjectD.java
+
+```java
+public static void main(String[] args) {
+    byte[] array1 = new byte[2 * 1024 * 1024];
+    array1 = new byte[2 * 1024 * 1024];
+    array1 = new byte[2 * 1024 * 1024];
+    byte[] array2 = new byte[128 * 1024];
+    array2 = null;
+    byte[] array3 = new byte[2 * 1024 * 1024];
+}
+```
+
+执行完代码后从GC日志如图4-51所示。
+
+> 图4-51 大对象GC日志
+
+![图4-51 大对象GC日志](chapter04/04-51.png)
+
+上图清楚地表明，新创建的大对象连Minor GC都没有触发，就直接进入了老年代。前后一共创建了4 × 2MB的数组 = 8192KB，年轻代的Eden区只使用了16%，Survivor区则是完全没有用到，而老年代不多不少，正好是8192KB。
+
+#### 4.5.5 Full GC
+
+之前已经讨论过几种情况下的GC日志，不过都属于“年轻人”的小打小闹。下面就来玩点大的，弄出个Full GC看看。
+
+还是老规矩，在前述“JVM基础参数”中将“-XX:PretenureSizeThreshold=10M”改为“-XX:PretenureSizeThreshold=3M”。如代码清单4-5所示。
+
+> 代码清单4-5 ExperimentObjectE.java
+
+```java
+public class ExperimentObjectE {
+    public static void main(String[] args) {
+        byte[] array1 = new byte[4 * 1024 * 1024];
+        array1 = null;
+        byte[] array2 = new byte[2 * 1024 * 1024];
+        byte[] array3 = new byte[2 * 1024 * 1024];
+        byte[] array4 = new byte[2 * 1024 * 1024];
+        byte[] array5 = new byte[128 * 1024];
+        byte[] array6 = new byte[2 * 1024 * 1024];
+    }
+}
+```
+
+因为array1的大小超过了JVM参数-XX:PretenureSizeThreshold规定的大小，所以就被直接分配到了老年代，如图4-52所示。
+
+> 图4-52 array1被分配到老年代
+
+![图4-52 array1被分配到老年代](chapter04/04-52.png)
+
+接着分配内存给array2、array3、array4和array5，然后再给array6分配空间，此时Eden区空间不足，触发Minro GC。GC日志精简后如图4-53所示。
+
+> 图4-53 因给array6分配空间不足触发的Minor GC
+
+![图4-53 因给array6分配空间不足触发的Minor GC](chapter04/04-53.png)
+
+1. ParNew (promotion failed): 7299K->8065K(9216K)：表示回收失败，因为array2、array3、array4、array5、array6都是强引用，一个都回收不掉。而当尝试往老年代中存放时，老年代也放不下，因为已有一个弱引用array1，故进而触发老年代的Major GC；
+2. [CMS: 8194K->6897K(10240K), ......]：表明老年代空间从GC前的8MB变为GC后的6MB，同时触发元空间的GC（Metaspace GC）。从8MB变为6MB的过程为：
+  - 先将array3和array4放入老年代，如图4-54所示；
+
+> 图4-54 先将array3和array4放入老年代
+
+![图4-54 先将array3和array4放入老年代](chapter04/04-54.png)
+
+  - 触发CMS的Full GC，回收掉无用的数组array1，如图4-55所示；
+
+> 图4-55 用CMS垃圾回收器回收掉无用的数组array1
+
+![图4-55 用CMS垃圾回收器回收掉无用的数组array1](chapter04/04-55.png)
+
+  - 将array2和arrya5再放进去，因此老年代的大小就是array2 + array3 + array4 + array5 = 3 × 2M + 128K，如图4-56所示；
+
+> 图4-56 再将array2和arrya5放到老年代
+
+![图4-56 再将array2和arrya5放到老年代](chapter04/04-56.png)
+
+  - 再将array6放到Eden区，如图4-57所示。
+
+> 图4-57 再将array6放到Eden区
+
+![图4-57 再将array6放到Eden区](chapter04/04-57.png)
+
+此时的JVM内存分配状态正如图4-53所显示的那样：Eden区的28%被array6填充，而老年代的6897KB，正是被array2、array3、array4、array5及其他存活对象霸占。
+
+最后，因为G1 GC的原理、数据结构、GC过程在前面已经讲的较多，而且其日志格式也不复杂，所以限于篇幅，笔者就不再单独论述它了。读者如果有兴趣，可以将代码清单4-1至代码清单4-5的相关JVM配置稍加修改，替换成G1的，再来看看它输出的日志内容是什么。
 
 ### 4.6 可视化工具
 
+之前在讲述多线程的时候提到过线程可视化工具，通过jconsole命令，不仅可以让工程师看到线程运行信息，而且也能看到一些关于JVM GC的信息。除此之外，还有几个比jconsole相对更专业的工具，可以获得更多与GC相关的信息。
 
+#### 4.6.1 jstat
 
+想使用jstat要具备两个条件：
 
+1. 通过jps得到正在运行的Java进程的PID；
+2. 通过命令选项告诉jstat想得到什么结果（命令选项列表可以用jstat -options得到）。
 
+至于jstat的命令参数和-options中各个选项的意义就不在这里浪费纸张了，毕竟搜索引擎可以讲解的更详细，这里只说说jstat指令的使用技巧。
 
+“jstat -gc [PID]”命令用于查看JVM内存使用和GC概要信息。它包括：
 
+1. S0C/S1C：From/To Servivor区，也就是S0/S1的大小；
+2. S0U/S1U：From/To Servivor区，也就是S0/S1已使用的内存大小；
+3. EC/EU：Eden区大小及其当前使用的内存大小；
+4. OC/OU：老年代及其当前使用的内存大小；
+5. MC/MU：元空间及其当前使用的内存大小；
+6. CCSC/CCSU：类空间及其当前使用的内存大小；
+7. YGC：运行到目前为止Young GC的次数；
+8. YGCT：Young GC的耗时；
+9. FGC：运行到目前为止Full GC的次数；
+10. FGCT：Full GC的耗时；
+11. GCT：所有GC的总耗时。
 
+“-gcutil”所列出的信息和这类似，只不过更粗略而已。
 
+笔者常用“jsta -gc [PID] [更新频率（毫秒）] [更新次数]”命令来获得以下信息：
 
+1. 查看年轻代对象增长速率；
+2. 推算Minor GC的触发频率和耗时；
+3. 推算Minor GC后多少对象存活；
+4. 推算Minor GC后有多少对象进入老年代；
+5. 查看老年代对象的增长速率；
+6. 推算Full GC的触发频率和耗时。
 
+例如，“jstat -gc 644 1000 3”表示查看GC情况，每秒更新，共3次。如图4-58所示。
 
+> 图4-58 jstat命令
 
+![图4-58 jstat命令](chapter04/04-58.png)
 
+因为界面宽度的关系，内容被折成了2行显示。
 
+#### 4.6.2 jmap和jhat
 
+如果发现JVM内存占用量特别大，想知道是哪个对象实例搞的鬼，那么就要轮到jmap出场了。通过“jmap -heap [PID]”命令，可以知道到底是哪些对象占据了那么多的内存。它显示的信息和GC日志中JVM堆内存状况的数据有些类似。使用jmap也可以了解系统运行时的对象分布，例如“jmap -histo [PID]”命令将结果按照各种对象占用内存空间的大小降序排列，占用内存最多的在最上，如图4-59所示。
 
+> 图4-59 jmap命令
 
+![图4-59 jmap命令](chapter04/04-59.png)
 
+而jhat命令可以通过浏览器的方式看到生成的堆内存快照，不过它需要jmap配合。
 
+1. 先用jmap生成堆内存快照：jmap -dump:live,format=b,file=[指定文件所在目录]\dump.hprof [PID]；
+2. 再用jhat读取这个快照文件：jhat [文件所在目录]\dump.hprof。
 
+这两步过程如图4-60所示。
 
+> 图4-60 jmap和jhat命令配合使用
 
+![图4-60 jmap和jhat命令配合使用](chapter04/04-60.png)
 
+jhat默认的访问端口是7000，在浏览器中打开如下地址即可：http://localhost:7000。
 
+另外，自从JDK 7中引入jcmd后，就其易用性和友好性来说，其实有些地方完全可以替代掉jstat和jmap。但不管什么工具，其输出的堆栈信息总是大同小异的。重要的不在于工具，而在于对堆栈信息的了解和掌握。如果不了解堆栈输出的日志，哪怕是神器也没用。这也是笔者为什么没有再继续介绍jcmd、jmc或其他工具的原因。
 
+#### 4.6.3 案例实践
 
+有一个企业内部的自研报表系统，它的JVM配置除了将：
 
+“-Xms20M -Xmx20M -Xmn10M -XX:PretenureSizeThreshold=10M”
+改为：
+
+“-Xms200M -Xmx200M -Xmn100M -XX:PretenureSizeThreshold=3M”
+
+以外，其运行环境、其他JVM参数配置和4.5节的“特别声明”保持一致。
+
+这个自研报表系统的核心代码如代码清单4-6所示。
+
+> 代码清单4-6 ToolsPracticeA.java
+
+```java
+public class ToolsPracticeA {
+    private static void loadData() throws Exception {
+        byte[] data = null;
+        for (int i = 0; i < 50; i++) {
+            data = new byte[100 * 1024];
+        }
+        data = null;
+        TimeUnit.MILLISECONDS.sleep(1000);
+    }
+
+    public static void main(String[] args) throws Exception {
+        TimeUnit.MILLISECONDS.sleep(30000);
+        while (true) {
+            loadData();
+        }
+    }
+}
+```
+
+从JVM参数可以知道：
+
+1. 整个JVM堆内存大小200MB；
+2. 年轻代100MB，其中Eden区80MB，S0和S1各10MB；
+3. 老年代100MB；
+4. 使用ParNew + CMS垃圾回收算法；
+5. 分配的对象大小 ＞ 3M时直接进入老年代；
+6. 年轻代对象年龄 ＞ 15时进入老年代。
+
+启动程序运行，通过jps命令得到PID，然后使用：“jstat -gc [PID]”或者“jstat -gc [PID] 1000 1000”，结果如图4-61所示。
+
+> 图4-61 使用jstat命令查看GC情况
+
+![图4-61 使用jstat命令查看GC情况](chapter04/04-61.png)
+
+从上图可以看出，Eden区的使用空间从第1秒的7577.5，经过15秒之后逐步升至77588.4，当第16秒再分配对象时，发现已经超过Eden区空间的大小时，触发第1次YGC（也就是Minor GC），此时S1也从0上升至 796.8。
+
+程序继续执行，当经过17次之后，Eden区空间大小又从1805.5飙升至81920.0，于是当第18次再分配对象时，触发第2次YGC，导致S0从0上升至 951.2，而S1则从796.8降至0，Eden区则降至5243.7。如图4-62所示。
+
+> 图4-62 使用jstat命令查看GC情况
+
+![图4-62 使用jstat命令查看GC情况](chapter04/04-62.png)
+
+持续观察观察一段时间，会发现每隔10多次，就会触发一次YGC，而年轻代的S0、S1和Eden这三个地方的内存空间，像变魔术一样倒腾来倒腾去，如此循环交替。到第16次GC时，老年代使用空间OU变为655.7，并且一直稳定在这一数字上下，之后不管再有多少次YGC，其变化也可忽略不计。而且随着YGC次数的增多，除了Eden区不停变化外，S0U和S1U也趋向于0。这一数据变化趋势，通过图4-63、图4-64和图4-65可以很清楚地看出来。这种稳定的数据变化也几乎不会引起Full GC。
+
+> 图4-63 持续观察GC情况
+
+![图4-63 持续观察GC情况](chapter04/04-63.png)
+
+> 图4-64 持续观察GC情况
+
+![图4-64 持续观察GC情况](chapter04/04-64.png)
+
+> 图4-65 持续观察GC情况
+
+![图4-65 持续观察GC情况](chapter04/04-65.png)
 
 #### 4.7 本章小节
 
+Java通过JVM的双亲委派机制完成类的加载，从父类到子类依次是启动类加载器、扩展类加载器、应用程序类加载器和自定义类加载器。通过这种机制既保护了程序运行不会出现“同名”错误，也保证了Java核心API的安全性和稳定性。同时，Java将JVM划分为不同的用途的“区”，包括JVM堆、JVM栈、程序计数器、方法区、线程栈帧、元空间（Metaspace），方便管理，统一调度。
 
+JVM仿效线程生命周期机制，将“存活时间”不同的变量、对象按“代”分为“年轻代”和“老年代”，这种将“老幼”或“快慢”区别对待的方法，有利于提高程序运行的效率。工程师可以通过JVM提供的参数来调整年轻代、老年代不同的属性和行为。
 
+迄今为止，保证垃圾回收机制能够顺利进行的垃圾回收算法并不多，例如“标记-复制”算法和“标记-清理”算法。但这些算法却产生了十多种垃圾回收器，包括单线程的Serial系列和多线程的ParNew、CMS、G1、ZGC等。垃圾回收总是从GC Roots开始的，如果年轻代中Eden区的空间不足，就会触发Young GC。当年轻代对象进入老年代时，需要经过一系列的空间担保机制才能实现，这种机制最大的作用就是尽量减少触发Full GC的概率。老年代同样有专属的垃圾回收器，但在G1出现以前，老年代和年轻代的垃圾回收效率相差10倍左右。通过一个JVM调优案例，给出了较为完整的JVM参数调配过程。
 
+G1 GC是一款淡化而并非抛弃了分代思维的垃圾回收器，它将那种“一次回收完”的思维，转换为了“每次清一点”的策略，其性能有了质的提升。
 
+GC日志是作为直接观察、分析GC表现及其特性的第一手资料。尤其要知道GC日志中每一段输出、每一行数据背后的意义。规则的触发都不会直接在日志中言明，而是通过观察数据之间的关系、数据出现的次数、GC的时机，和分析对象的“去向”才能得到，最后笔者故意制造了一个Full GC来做实验。
 
+Java给工程师们准备了一些能够在程序运行时，动态分析系统GC状况的工具。如jstat、jmap和jhat。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+掌握GC和掌握GC中每个技术细节是不同的概念。有些工程师把类似卡表、染色指针、STAB等各种GC技术细节弄的门清，但遇到性能调优时还是无从下手。这是因为忽略了GC特性和JVM的特性，对GC日志的解读不到位造成的。
 
 #### 4.7 本章练习
+
+1. JVM栈需要垃圾回收吗？什么时候被回收？为什么？
+
+2. 在您手头正在开发的系统中，有哪些是短期生存对象，哪些是长期生存对象？试着将之前做过的系统进行JVM参数设置前的合理估算。
+
+3. 当系统访问量暴增1000倍的时候，JVM可能会出现哪些问题？该如何调整？
+
+4. 尝试估算一下当前正在开发的系统：每秒会使用多少内存空间？多长时间触发一次垃圾回收？垃圾回收之后会有多少对象存活？存活对象会占多少空间？
+
+5. 已上线的系统什么时候会触发Minor GC？每次Minor GC耗时多久？对现有系统是否有影响？Minor GC前如何检查老年代？步骤和条件是什么？什么时候在Minor GC前会触发Full GC？Minor GC后可能有哪几种情况？哪些情况Minor GC后对象会进入老年代？
+
+6. 单线程GC和多线程GC，各自有什么优缺点？分别适用于哪种场景？
+
+7. 假如年轻代采用ParNew，老年代采用CMS，如何保证只做Minor GC？相应的JVM参数该如何配置？
+
+8. 当前正在开发的系统有出现过Full GC吗？如果有，多久触发一次？该如何通过JVM参数优化的方式消除它？
+
+9. 那些场景不适合使用G1？G1还有哪些地方可以优化？什么时候可能会频繁地触发G1的混合回收？如何尽量减少混合回收的频率？
+
+10. 尝试通过代码和JVM参数，制造出下面两种场景，然后观察GC日志输出。
+  - 触发YGC前，老年代空间小于历次YGC后升入老年代的对象的平均大小；
+  - 老年代被使用率达到92%的阈值。
