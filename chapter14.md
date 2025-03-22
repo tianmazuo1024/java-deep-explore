@@ -417,6 +417,30 @@ Navicat可以支持概念数据模型、逻辑数据模型和物理数据模型�
     <td bgcolor="black">字符集</td>
     <td bgcolor="black">注释</td>
 	</tr>
+  <tr>
+		<td>guid</td>
+		<td>bigint</td>
+    <td>20</td>
+    <td>0</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td>非自增</td>
+    <td></td>
+    <td>全局唯一ID</td>
+	</tr>
+  <tr>
+		<td>name</td>
+		<td>varchar</td>
+    <td>64</td>
+    <td>0</td>
+    <td>''</td>
+    <td>是</td>
+    <td></td>
+    <td></td>
+    <td>utf8mb4</td>
+    <td>作者名称</td>
+	</tr>
 </table>
 
 
