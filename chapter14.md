@@ -392,6 +392,17 @@ Navicat可以支持概念数据模型、逻辑数据模型和物理数据模型�
 
 > 表14-2 数据字典示例
 
+<table border="2" >
+	<tr >
+		<td colspan="2">跨两个单元格</td>
+	</tr>
+	<tr >
+		<td>第一格</td>
+		<td>第二格</td>
+	</tr>
+</table>
+
+
 | 数据表 | default.author信息表 | 表引擎 | MyISAM |
 | 唯一索引 | 无 | 字符集 | utf8mb4 / utf8mb4_general_ci |
 | 字段 | 类型 | 长度 | 精度 |
