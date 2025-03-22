@@ -1,0 +1,57 @@
+version: '3.1'
+services:
+    web:
+        build:
+          context: ./web
+          dockerfile: Dockerfile
+        ports:
+          - '8080:8080'
+        container_name: transaction
+        volumes:
+          - './jar:/home/work'
+        depends_on:
+          - 'mysql57'
+    mysql57:
+        image: mysql:5.7
+        container_name: mysql
+        environment:
+          MYSQL_ROOT_PASSWORD: 123456
+        volumes:
+          - './mysql/init:/docker-entrypoint-initdb.d/'
+          - './mysql/conf/my.cnf:/etc/my.cnf'
+        ports:
+          - '3306:3306'
+    redis:
+        image: redis:latest
+        container_name: redis
+        command: redis-server --requirepass 123456
+        ports:
+          - '6379:6379'
+    mongo:
+        image: mongo:latest
+        container_name: mongo
+        ports:
+          - "27017:27017"
+        environment:
+          MONGO_INITDB_ROOT_USERNAME: test
+          MONGO_INITDB_ROOT_PASSWORD: 123456
+        restart: always
+    activemq:
+        image: webcenter/activemq:latest
+        container_name: activemq
+        command: redis-server --requirepass 123456
+        ports:
+          - '61616:61616'
+          - '8181:8181'
+        environment:
+          ACTIVEMQ_ADMIN_LOGIN: admin
+          ACTIVEMQ_ADMIN_PASSWORD: admin
+        restart: always
+    nacos:
+        image: nacos/nacos-server:latest
+        container_name: nacos
+        ports:
+          - '8848:8848'
+        environment:
+          MODE: standalone
+        restart: always
